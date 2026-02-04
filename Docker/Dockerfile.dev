@@ -1,0 +1,29 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+
+WORKDIR /app
+
+COPY certificado-corp.crt /usr/local/share/ca-certificates/certificado-corp.crt
+
+
+# Instala certificados SSL
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && update-ca-certificates
+
+# Copia apenas os csproj primeiro (cache)
+COPY *.sln .
+COPY Sso.Api/*.csproj Sso.Api/
+COPY Sso.Identity/*.csproj Sso.Identity/
+COPY Sso.Infrastructure/*.csproj Sso.Infrastructure/
+COPY Sso.Shared/*.csproj Sso.Shared/
+
+RUN dotnet restore
+
+# Agora copia tudo
+COPY . .
+
+WORKDIR /app/Sso.Api
+
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "watch", "run", "--urls=http://0.0.0.0:8080"]
