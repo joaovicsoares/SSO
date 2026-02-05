@@ -84,7 +84,7 @@ cd SSO
 ### 2️⃣ Subir o ambiente local
 
 ```bash
-docker-compose -f docker-compose.dev.yml up
+docker-compose up
 ```
 
 Isso irá iniciar:
