@@ -1,421 +1,170 @@
-# Documento de Requisitos – Sistema de Single Sign-On (SSO)
+# SSO – Sistema de Single Sign-On
 
-## 1. Visão Geral
+##  Visão Geral
 
-Este documento descreve os requisitos funcionais, não funcionais e a estrutura de dados necessária para a implementação de um **Sistema de Single Sign-On (SSO)**, utilizando **OAuth 2.0 (Authorization Code Flow)** e **OpenID Connect (OIDC)**, com **UI de login própria** e **consentimento por sistema**.
+Este projeto é um **Sistema de Single Sign-On (SSO)** desenvolvido em **.NET**, com foco em **segurança, escalabilidade e boas práticas de arquitetura**.
 
-O sistema tem como objetivo centralizar a autenticação de usuários e permitir que múltiplos sistemas clientes utilizem uma identidade única, de forma segura, padronizada e preparada para **cenários multi-tenant**.
+O SSO será responsável por:
 
----
+* Autenticação centralizada
+* Emissão e validação de tokens (JWT)
+* Gerenciamento de usuários, roles e permissões
+* Integração com múltiplas aplicações clientes
 
-## 2. Escopo do Projeto
-
-### 2.1 Modelo Arquitetural de Autorização
-
-O sistema de Single Sign-On (SSO) é responsável exclusivamente por:
-
-- Autenticação de usuários
-- Centralização de identidade
-- Emissão de tokens contendo roles e permissions
-
-O SSO **não possui conhecimento sobre regras de negócio nem sobre recursos específicos** dos sistemas clientes.
-
-Cada sistema cliente é considerado **dono dos seus próprios recursos** e deve aplicar suas regras de autorização utilizando as **permissions recebidas no Access Token**.
-
-As permissões são definidas de forma centralizada no SSO, porém **cada sistema cliente declara explicitamente quais permissões reconhece**, garantindo isolamento lógico entre sistemas e preparando a arquitetura para um ambiente **multi-tenant**.
+O projeto utiliza **Clean Architecture**, **Docker** e está preparado para **CI/CD**, com ambientes separados de **development**, **staging** e **production**.
 
 ---
 
-### 2.2 Funcionalidades incluídas
+## 🏗️ Arquitetura
 
-- OpenID Connect (OIDC)
-- OAuth 2.0 – Authorization Code Flow
-- Consentimento de identidade por sistema
-- Interface de login própria (SSO UI)
-- Tokens JWT (Access Token, ID Token e Refresh Token)
-- Isolamento de permissões por sistema cliente
+Estrutura baseada em **Clean Architecture**:
 
----
+```
+📦 SSO/
+├── 📁 Sso.Api/              → Presentation Layer (Controllers, Middleware, Startup)
+├── 📁 Sso.Application/      → Application Layer (Use Cases, DTOs, Interfaces)
+├── 📁 Sso.Domain/           → Domain Layer (Entities, Value Objects, Business Rules)
+└── 📁 Sso.Infrastructure/   → Infrastructure Layer (Data Access, External Services)
+```
 
-### 2.3 Funcionalidades fora do escopo
+### Responsabilidades das Camadas:
 
-- Revogação de tokens em tempo real
-- Autorização baseada em scopes de domínio
-- Login social (Google, Microsoft, etc.)
-- Autenticação multifator (MFA)
+* **Sso.Api** → Camada de apresentação (Controllers, Middlewares, Configurações)
+* **Sso.Application** → Casos de uso, DTOs, validações e interfaces de serviços
+* **Sso.Domain** → Entidades de domínio, regras de negócio e interfaces de repositórios (núcleo sem dependências)
+* **Sso.Infrastructure** → Implementação de repositórios, EF Core, serviços externos
 
----
+### Fluxo de Dependências:
 
-## 3. Atores do Sistema
+```
+Sso.Api → Sso.Application → Sso.Domain ← Sso.Infrastructure
+```
 
-### 3.1 Usuário Final
-
-- Realiza login no SSO
-- Concede consentimento para sistemas clientes
-- Utiliza múltiplos sistemas com uma única autenticação
-
----
-
-### 3.2 Sistema Cliente
-
-- Redireciona o usuário para autenticação no SSO
-- Solicita tokens ao SSO
-- Consome informações de identidade do usuário
-- Aplica autorização baseada nas permissões recebidas
+A separação garante baixo acoplamento, alta testabilidade e facilidade de evolução.
 
 ---
 
-### 3.3 Administrador
+## 🌱 Ambientes
 
-- Gerencia usuários
-- Gerencia roles e permissões
-- Gerencia sistemas clientes
-- Gerencia permissões habilitadas por sistema
+O projeto trabalha com três ambientes principais:
 
----
+| Ambiente    | Descrição                      |
+| ----------- | ------------------------------ |
+| Development | Desenvolvimento local          |
+| Staging     | Ambiente de homologação/testes |
+| Production  | Ambiente produtivo             |
 
-## 4. Requisitos Funcionais
+O ambiente é controlado pela variável:
 
-### 4.1 Autenticação de Usuários
-
-- Autenticação via **email e senha**
-- Senhas armazenadas com **hash seguro + salt**
-- Sessão autenticada via cookie seguro (`HttpOnly`)
-- Logout do usuário
+```bash
+ASPNETCORE_ENVIRONMENT
+```
 
 ---
 
-### 4.2 OAuth 2.0 – Authorization Code Flow
+## 🐳 Setup de Desenvolvimento (Docker)
 
-#### 4.2.1 Endpoint `/authorize`
+### Pré-requisitos
 
-- Validar `client_id`, `redirect_uri` e `scope`
-- Verificar autenticação do usuário
-- Redirecionar para login se necessário
-- Gerar **Authorization Code** de uso único
-
----
-
-#### 4.2.2 Endpoint `/token`
-
-- Validar Authorization Code
-- Validar `client_secret` e **PKCE**
-- Emitir:
-  - Access Token (JWT)
-  - ID Token (JWT)
-  - Refresh Token
+* Git
+* Docker e Docker Compose
+* .NET 10 SDK (opcional, para desenvolvimento local sem Docker)
 
 ---
 
-### 4.3 OpenID Connect (OIDC)
+### 1️⃣ Clonar o repositório
 
-- Emissão de ID Token
-- Endpoint de descoberta:
-  - `/.well-known/openid-configuration`
-- Endpoint `/userinfo`
-
-#### 4.3.1 Claims mínimas
-
-- `sub`
-- `email`
-- `name`
-- `iss`
-- `aud`
-- `exp`
+```bash
+git clone https://github.com/joaovicosoares/SSO.git
+cd SSO
+```
 
 ---
 
-### 4.4 Consentimento por Sistema
+### 2️⃣ Subir o ambiente local
 
-O consentimento do usuário é utilizado **exclusivamente para identidade**, conforme o padrão OpenID Connect.
+```bash
+docker-compose -f docker-compose.dev.yml up
+```
 
-Scopes utilizados:
-
-- `openid`
-- `profile`
-- `email`
-
-A tela de consentimento possui caráter informativo e **não concede permissões de domínio**.
+Isso irá iniciar:
+- **API SSO** em `http://localhost:5000`
+- **PostgreSQL** em `localhost:5432`
 
 ---
 
-### 4.5 UI do SSO
+### 3️⃣ Desenvolvimento local (sem Docker)
 
-#### 4.5.1 UI de Login
+Se preferir rodar diretamente com .NET:
 
-- Login (email e senha)
-- Erro de autenticação
-- Consentimento de identidade
-- Logout
+```bash
+# Restaurar dependências
+dotnet restore
 
----
+# Executar a API
+dotnet run --project Sso.Api
+```
 
-#### 4.5.2 UI de Cadastro de Usuários
-
-- Cadastro com email e senha
-- Validações básicas
-- Ativação inicial
-- Auditoria da criação
-
-Cadastro pode ser:
-
-- Público, ou
-- Restrito a administradores
+**Nota:** Configure a connection string do PostgreSQL em `appsettings.Development.json`
 
 ---
 
-#### 4.5.3 UI Administrativa
+### 4️⃣ Verificar se está funcionando
 
-##### Gestão de Usuários
-
-- Criar, editar e desativar usuários
-- Atribuir roles
-- Atribuir permissões diretas
-- Resetar senha
-
-##### Gestão de Roles e Permissões
-
-- Criar roles
-- Criar permissões
-- Associar permissões a roles
-
-##### Gestão de Sistemas Clientes
-
-- Criar e editar clients
-- Gerenciar `redirect_uri`
-- Ativar/desativar clients
-- Definir permissões habilitadas por client
-
-##### Auditoria
-
-- Visualização e filtro de logs
+```bash
+curl http://localhost:5000/weatherforecast
+```
 
 ---
 
-### 4.6 Tokens
+## 🔄 CI/CD
 
-#### 4.6.1 Access Token
+O projeto utiliza **GitHub Actions** para integração e entrega contínua:
 
-- Formato JWT
-- Curta duração
-- Contém **apenas permissões válidas para o sistema cliente**
-- Permissões emitidas:
+### Pipeline Atual:
 
----
+* ✅ Build da aplicação (.NET 10)
+* ✅ Testes unitários e de integração
+* ✅ Cobertura de código
+* ✅ PostgreSQL para testes
 
-#### 4.6.2 ID Token
+### Estratégia de Branches:
 
-- Formato JWT
-- Contém apenas informações de identidade do usuário
+* **feature/*** → Build e validações automáticas
+* **develop** → Deploy automático em **staging** (futuro)
+* **main** → Deploy em **production** (futuro)
 
----
-
-#### 4.6.3 Refresh Token
-
-- Persistido no banco de dados
-- Vinculado ao usuário e ao client
-- Rotação a cada uso
+Veja mais detalhes em [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
-## 5. Requisitos Não Funcionais
 
-### 5.1 Segurança
+## 🧠 Observações
 
-- Hash seguro (Argon2id ou BCrypt)
-- Rate limiting
-- Proteção contra brute force
-- PKCE obrigatório
-- Validação estrita de `redirect_uri`
-- JWT assinado (RS256 ou ES256)
-- Publicação de chaves via `jwks_uri`
+Este projeto segue os princípios de **Clean Architecture** e **Domain-Driven Design (DDD)**, com foco em:
 
----
+* Separação clara de responsabilidades
+* Baixo acoplamento entre camadas
+* Alta testabilidade
+* Facilidade de manutenção e evolução
 
-### 5.2 Performance
-
-- Validação de Access Token sem acesso ao banco
-- Arquitetura stateless
+O projeto tem caráter **evolutivo**, servindo tanto para uso real quanto como base de estudo e referência arquitetural.
 
 ---
 
-### 5.3 Escalabilidade
+## 📚 Documentação Adicional
 
-- Suporte a múltiplas instâncias
-- Preparado para multi-tenant
-
----
-
-## 6. Modelo de Dados – Tabelas do Banco
-
-### 6.1 Users
-
-- Id
-- Email
-- PasswordHash
-- Name
-- IsActive
-- CreatedAt
+* [CONTRIBUTING.md](CONTRIBUTING.md) - Guia de contribuição e branching strategy
+* [Product Backlog](product-backlog.md) - PBIs e roadmap do projeto
 
 ---
 
-### 6.2 Roles
+## 📄 Licença
 
-- Id
-- Name
-- Description
-- CreatedAt
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-### 6.3 Permissions
+## 🤝 Contribuindo
 
-- Id
-- Name
-- Description
-- CreatedAt
-
----
-
-### 6.4 RolePermissions
-
-- RoleId
-- PermissionId
-
----
-
-### 6.5 UserRoles
-
-- UserId
-- RoleId
-
----
-
-### 6.6 UserPermissions
-
-- UserId
-- PermissionId
-- GrantedAt
-- GrantedBy
-
----
-
-### 6.7 Clients
-
-- Id
-- Name
-- ClientId
-- ClientSecret
-- RedirectUris
-- IsActive
-- CreatedAt
-
----
-
-### 6.8 ClientPermissions
-
-Relaciona permissões reconhecidas por cada sistema cliente.
-
-- ClientId
-- PermissionId
-- CreatedAt
-
-> Apenas permissões presentes nesta tabela podem ser emitidas no Access Token para o respectivo client.
-
----
-
-### 6.9 Scopes
-
-- Id
-- Name
-- Description
-
----
-
-### 6.10 ClientScopes
-
-- ClientId
-- ScopeId
-
----
-
-### 6.11 UserConsents
-
-- Id
-- UserId
-- ClientId
-- GrantedAt
-
----
-
-### 6.12 AuthorizationCodes
-
-- Code
-- UserId
-- ClientId
-- RedirectUri
-- ExpiresAt
-- IsUsed
-
----
-
-### 6.13 RefreshTokens
-
-- Id
-- Token
-- UserId
-- ClientId
-- ExpiresAt
-- CreatedAt
-- IsRevoked
-
----
-
-### 6.14 AuditLogs
-
-- Id
-- EventType
-- EntityType
-- EntityId
-- UserId
-- ClientId
-- Timestamp
-- IpAddress
-- UserAgent
-- Data (JSON)
-
----
-
-## 7. Controle de Acesso (RBAC + Permissions + Client Isolation)
-
-- Roles agrupam permissões
-- Usuários podem possuir permissões diretas
-- Clients definem quais permissões reconhecem
-- Tokens contêm apenas permissões válidas para o client
-
----
-
-## 8. Auditoria
-
-Eventos auditáveis:
-
-- Login (sucesso e falha)
-- Logout
-- Consentimento
-- Emissão de tokens
-- Uso de refresh token
-- Ações administrativas
-
-Diretrizes:
-
-- Logs append-only
-- Sem dados sensíveis
-- Baixo impacto no fluxo principal
-
----
-
-## 9. Considerações Finais
-
-Este documento define um **Sistema de Single Sign-On robusto, seguro e preparado para multi-tenant**, alinhado aos padrões **OAuth 2.0** e **OpenID Connect**.
-
-A introdução da tabela **ClientPermissions** garante isolamento entre sistemas, controle fino de autorização e flexibilidade para evolução futura sem necessidade de reestruturação profunda.
+Contribuições são bem-vindas! Por favor, leia o [CONTRIBUTING.md](CONTRIBUTING.md) antes de enviar um Pull Request.
