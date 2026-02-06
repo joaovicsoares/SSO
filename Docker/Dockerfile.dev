@@ -13,9 +13,9 @@ RUN apt-get update \
 # Copia apenas os csproj primeiro (cache)
 COPY *.sln .
 COPY Sso.Api/*.csproj Sso.Api/
-COPY Sso.Identity/*.csproj Sso.Identity/
+COPY Sso.Domain/*.csproj Sso.Domain/
 COPY Sso.Infrastructure/*.csproj Sso.Infrastructure/
-COPY Sso.Shared/*.csproj Sso.Shared/
+COPY Sso.Application/*.csproj Sso.Application/
 
 RUN dotnet restore
 
