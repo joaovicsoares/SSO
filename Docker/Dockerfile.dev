@@ -11,7 +11,7 @@ RUN apt-get update \
     && update-ca-certificates
 
 # Copia apenas os csproj primeiro (cache)
-COPY *.sln .
+COPY *.slnx .
 COPY Sso.Api/*.csproj Sso.Api/
 COPY Sso.Domain/*.csproj Sso.Domain/
 COPY Sso.Infrastructure/*.csproj Sso.Infrastructure/
