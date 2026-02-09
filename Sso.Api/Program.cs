@@ -3,8 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var conStr = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' não foi configurada.");
+
 builder.Services.AddDbContext<SsoDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(conStr));
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(conStr);
 
 builder.Services.AddOpenApi();
 
@@ -37,11 +44,7 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
-app.MapGet("/health/db", async (SsoDbContext db) =>
-{
-    var canConnect = await db.Database.CanConnectAsync();
-    return canConnect ? Results.Ok("Database connected!") : Results.Problem("Cannot connect to database");
-});
+app.MapHealthChecks("/health");
 
 app.Run();
 
