@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Sso.Api/Sso.Api.csproj" />
+  <Project Path="Sso.Application/Sso.Application.csproj" />
+  <Project Path="Sso.Domain/Sso.Domain.csproj" />
+  <Project Path="Sso.Infrastructure/Sso.Infrastructure.csproj" />
+</Solution>

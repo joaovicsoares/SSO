@@ -1,0 +1,51 @@
+name: CI - SSO
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: sso_test
+          POSTGRES_USER: sso
+          POSTGRES_PASSWORD: sso
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U sso"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Testes
+        env:
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=sso_test;Username=sso;Password=sso
+        run: dotnet test --no-build --configuration Release
+
+      # - name: Build Docker image
+      #   run: docker build -f docker/Dockerfile -t sso-api .
+
