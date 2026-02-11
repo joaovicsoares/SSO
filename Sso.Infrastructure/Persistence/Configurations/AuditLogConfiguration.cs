@@ -18,6 +18,7 @@ namespace Sso.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.EntityType).HasConversion<string>();
 
+            builder.OwnsOne(x => x.Data, builder => { builder.ToJson(); });
         }
     }
 }

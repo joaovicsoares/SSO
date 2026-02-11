@@ -10,7 +10,9 @@ namespace Sso.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasAlternateKey(x => x.Guid);
+            builder.HasIndex(x => x.Guid).IsUnique();
+
+            builder.HasIndex(x => x.Token).IsUnique();
 
             builder.HasOne(x => x.User).WithMany();
 

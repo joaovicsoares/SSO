@@ -8,6 +8,7 @@ namespace Sso.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ClientPermission> builder)
         {
+            builder.HasKey(x => new { x.ClientId, x.PermissionId });
         }
     }
 }
