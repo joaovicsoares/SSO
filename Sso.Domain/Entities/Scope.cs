@@ -1,6 +1,6 @@
 namespace Sso.Domain.Entities
 {
-    public class Role
+    public class Scope
     {
         public int Id { get; init; } = 0;
 
@@ -9,10 +9,5 @@ namespace Sso.Domain.Entities
         public required string Name { get; set; }
 
         public string? Description { get; set; }
-
-        public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
-
-        public IReadOnlyCollection<Permission> Permissions => permissions;
-        private readonly HashSet<Permission> permissions = [];
     }
 }

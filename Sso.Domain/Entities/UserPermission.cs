@@ -2,8 +2,7 @@ namespace Sso.Domain.Entities
 {
     public class UserPermission
     {
-        public Guid UserId { get; private init; }
-
+        public int UserId { get; private init; }
         public required User User
         {
             get;
@@ -15,8 +14,7 @@ namespace Sso.Domain.Entities
             }
         }
 
-        public Guid PermissionId { get; private init; }
-
+        public int PermissionId { get; private init; }
         public required Permission Permission
         {
             get;
@@ -30,6 +28,16 @@ namespace Sso.Domain.Entities
 
         public DateTime GrantedAt { get; init; } = DateTime.UtcNow;
 
-        public required User GrantedBy { get; init; }
+        public int GrantedById { get; private init; }
+        public required User GrantedBy
+        {
+            get;
+            init
+            {
+                GrantedById = value.Id;
+
+                field = value;
+            }
+        }
     }
 }
