@@ -4,23 +4,23 @@ using Sso.Domain.Entities;
 
 namespace Sso.Infrastructure.Persistence.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class ClientConfiguration : IEntityTypeConfiguration<Client>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<Client> builder)
         {
             builder.HasKey(x => x.Id);
 
             builder.HasAlternateKey(x => x.Guid);
 
-            builder.HasIndex(x => x.Email);
+            builder.HasIndex(x => x.ClientId);
 
             builder
-                .HasMany(x => x.Roles)
-                .WithMany();
+                .HasMany(x => x.ClientPermissions)
+                .WithOne(x => x.Client);
 
             builder
-                .HasMany(x => x.UserPermissions)
-                .WithOne(x => x.User);
+                .HasMany(x => x.Scopes)
+                .WithOne();
         }
     }
 }
