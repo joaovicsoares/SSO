@@ -13,6 +13,11 @@ namespace Sso.Infrastructure.Persistence.Configurations
             builder.HasOne(x => x.User).WithMany();
 
             builder.HasOne(x => x.Client).WithMany();
+
+            builder.Property(x => x.EventType).HasConversion<string>();
+
+            builder.Property(x => x.EntityType).HasConversion<string>();
+
         }
     }
 }
