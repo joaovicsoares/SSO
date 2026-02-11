@@ -1,3 +1,5 @@
+using Sso.Domain.ValueObjects;
+
 namespace Sso.Domain.Entities
 {
     public class User
@@ -6,7 +8,7 @@ namespace Sso.Domain.Entities
 
         public Guid Guid { get; init; } = Guid.NewGuid();
 
-        public required string Email { get; set; }
+        public required Email Email { get; set; }
 
         public required string PasswordHash { get; set; }
 
