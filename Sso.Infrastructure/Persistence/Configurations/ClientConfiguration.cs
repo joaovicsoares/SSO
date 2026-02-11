@@ -14,13 +14,9 @@ namespace Sso.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.ClientId);
 
-            builder
-                .HasMany(x => x.ClientPermissions)
-                .WithOne(x => x.Client);
+            builder.HasMany(x => x.ClientPermissions).WithOne(x => x.Client);
 
-            builder
-                .HasMany(x => x.Scopes)
-                .WithOne();
+            builder.HasMany(x => x.Scopes).WithOne();
         }
     }
 }

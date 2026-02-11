@@ -14,13 +14,9 @@ namespace Sso.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.Email);
 
-            builder
-                .HasMany(x => x.Roles)
-                .WithMany();
+            builder.HasMany(x => x.Roles).WithMany();
 
-            builder
-                .HasMany(x => x.UserPermissions)
-                .WithOne(x => x.User);
+            builder.HasMany(x => x.UserPermissions).WithOne(x => x.User);
         }
     }
 }
