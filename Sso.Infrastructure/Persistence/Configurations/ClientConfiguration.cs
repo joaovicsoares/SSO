@@ -16,7 +16,7 @@ namespace Sso.Infrastructure.Persistence.Configurations
 
             builder.HasMany(x => x.ClientPermissions).WithOne(x => x.Client);
 
-            builder.HasMany(x => x.Scopes).WithOne();
+            builder.HasMany(x => x.Scopes).WithMany();
         }
     }
 }
