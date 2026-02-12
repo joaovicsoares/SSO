@@ -28,13 +28,13 @@ namespace Sso.Domain.Entities
 
         public DateTime GrantedAt { get; init; } = DateTime.UtcNow;
 
-        public int GrantedById { get; private init; }
-        public required User GrantedBy
+        public int? GrantedById { get; private init; }
+        public User? GrantedBy
         {
             get;
             init
             {
-                GrantedById = value.Id;
+                GrantedById = value?.Id;
 
                 field = value;
             }
