@@ -4,8 +4,6 @@ namespace Sso.Domain.ValueObjects
 {
     public readonly struct Email : IEquatable<Email>
     {
-        public const int MaxLength = 254;
-
         public string Value { get; }
 
         public Email(string value)
@@ -23,9 +21,6 @@ namespace Sso.Domain.ValueObjects
             int atIndex = emailString.IndexOf('@');
 
             if (atIndex <= 0 || atIndex != emailString.LastIndexOf('@'))
-                return false;
-
-            if (emailString.Length > MaxLength)
                 return false;
 
             string localPart = emailString[..atIndex];
