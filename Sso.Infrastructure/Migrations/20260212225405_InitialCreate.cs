@@ -48,13 +48,28 @@ namespace Sso.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Scope",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Guid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Scope", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Guid = table.Column<Guid>(type: "uuid", nullable: false),
-                    Email = table.Column<string>(type: "character varying(254)", maxLength: 254, nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
@@ -63,27 +78,6 @@ namespace Sso.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Scope",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Guid = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    ClientId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Scope", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Scope_Client_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "Client",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -106,6 +100,30 @@ namespace Sso.Infrastructure.Migrations
                         column: x => x.RoleId,
                         principalTable: "Role",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClientScope",
+                columns: table => new
+                {
+                    ClientId = table.Column<int>(type: "integer", nullable: false),
+                    ScopesId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientScope", x => new { x.ClientId, x.ScopesId });
+                    table.ForeignKey(
+                        name: "FK_ClientScope_Client_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Client",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClientScope_Scope_ScopesId",
+                        column: x => x.ScopesId,
+                        principalTable: "Scope",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -282,7 +300,7 @@ namespace Sso.Infrastructure.Migrations
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     PermissionId = table.Column<int>(type: "integer", nullable: false),
                     GrantedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    GrantedById = table.Column<int>(type: "integer", nullable: false)
+                    GrantedById = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -297,8 +315,7 @@ namespace Sso.Infrastructure.Migrations
                         name: "FK_UserPermission_User_GrantedById",
                         column: x => x.GrantedById,
                         principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserPermission_User_UserId",
                         column: x => x.UserId,
@@ -357,6 +374,11 @@ namespace Sso.Infrastructure.Migrations
                 column: "PermissionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClientScope_ScopesId",
+                table: "ClientScope",
+                column: "ScopesId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Permission_Guid",
                 table: "Permission",
                 column: "Guid",
@@ -399,11 +421,6 @@ namespace Sso.Infrastructure.Migrations
                 name: "IX_RoleUser_UserId",
                 table: "RoleUser",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Scope_ClientId",
-                table: "Scope",
-                column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Scope_Guid",
@@ -458,19 +475,22 @@ namespace Sso.Infrastructure.Migrations
                 name: "ClientPermission");
 
             migrationBuilder.DropTable(
+                name: "ClientScope");
+
+            migrationBuilder.DropTable(
                 name: "RefreshToken");
 
             migrationBuilder.DropTable(
                 name: "RoleUser");
 
             migrationBuilder.DropTable(
-                name: "Scope");
-
-            migrationBuilder.DropTable(
                 name: "UserConsent");
 
             migrationBuilder.DropTable(
                 name: "UserPermission");
+
+            migrationBuilder.DropTable(
+                name: "Scope");
 
             migrationBuilder.DropTable(
                 name: "Client");

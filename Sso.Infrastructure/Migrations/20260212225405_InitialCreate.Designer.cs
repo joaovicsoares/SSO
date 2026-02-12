@@ -12,8 +12,8 @@ using Sso.Infrastructure.Persistence;
 namespace Sso.Infrastructure.Migrations
 {
     [DbContext(typeof(SsoDbContext))]
-    [Migration("20260212015041_ClientScopeManyToManyAndUserPermissionGrantedByIsOptional")]
-    partial class ClientScopeManyToManyAndUserPermissionGrantedByIsOptional
+    [Migration("20260212225405_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
