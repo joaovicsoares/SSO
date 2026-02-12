@@ -11,7 +11,6 @@ namespace Sso.Infrastructure.Persistence
         {
             configurationBuilder
                 .Properties<Email>()
-                .HaveMaxLength(Email.MaxLength)
                 .HaveConversion<EmailStringConverter>();
         }
 
