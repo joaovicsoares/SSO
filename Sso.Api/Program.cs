@@ -1,4 +1,5 @@
 using Sso.Infrastructure.Persistence;
+using Sso.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,8 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast");
 
 app.MapHealthChecks("/health");
+
+await app.Services.InitInfrastructureAsync();
 
 app.Run();
 
