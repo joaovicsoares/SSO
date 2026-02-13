@@ -37,6 +37,21 @@ namespace Sso.Infrastructure.Migrations
                     b.ToTable("ClientScope");
                 });
 
+            modelBuilder.Entity("PermissionRole", b =>
+                {
+                    b.Property<int>("PermissionsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PermissionsId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("PermissionRole");
+                });
+
             modelBuilder.Entity("RoleUser", b =>
                 {
                     b.Property<int>("RolesId")
@@ -223,15 +238,10 @@ namespace Sso.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("RoleId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Guid")
                         .IsUnique();
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Permission");
                 });
@@ -434,6 +444,21 @@ namespace Sso.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PermissionRole", b =>
+                {
+                    b.HasOne("Sso.Domain.Entities.Permission", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sso.Domain.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RoleUser", b =>
                 {
                     b.HasOne("Sso.Domain.Entities.Role", null)
@@ -520,13 +545,6 @@ namespace Sso.Infrastructure.Migrations
                     b.Navigation("Permission");
                 });
 
-            modelBuilder.Entity("Sso.Domain.Entities.Permission", b =>
-                {
-                    b.HasOne("Sso.Domain.Entities.Role", null)
-                        .WithMany("Permissions")
-                        .HasForeignKey("RoleId");
-                });
-
             modelBuilder.Entity("Sso.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Sso.Domain.Entities.Client", "Client")
@@ -593,11 +611,6 @@ namespace Sso.Infrastructure.Migrations
             modelBuilder.Entity("Sso.Domain.Entities.Client", b =>
                 {
                     b.Navigation("ClientPermissions");
-                });
-
-            modelBuilder.Entity("Sso.Domain.Entities.Role", b =>
-                {
-                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.User", b =>

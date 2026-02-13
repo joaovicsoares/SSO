@@ -11,6 +11,8 @@ namespace Sso.Infrastructure.Persistence.Configurations
             builder.HasKey(x => x.Id);
 
             builder.HasIndex(x => x.Guid).IsUnique();
+
+            builder.HasMany(x => x.Permissions).WithMany();
         }
     }
 }
