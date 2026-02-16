@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var conStr = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
-        "Connection string 'DefaultConnection' n�o foi configurada.");
+        "Connection string 'DefaultConnection' não foi configurada.");
 
 builder.Services.AddDbContext<SsoDbContext>(options =>
     options.UseNpgsql(conStr));
