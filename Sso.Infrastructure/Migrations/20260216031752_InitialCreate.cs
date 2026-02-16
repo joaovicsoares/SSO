@@ -13,7 +13,7 @@ namespace Sso.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Client",
+                name: "Clients",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -28,11 +28,11 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Client", x => x.Id);
+                    table.PrimaryKey("PK_Clients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Permission",
+                name: "Permissions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -44,11 +44,11 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Permission", x => x.Id);
+                    table.PrimaryKey("PK_Permissions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Role",
+                name: "Roles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -60,11 +60,11 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Role", x => x.Id);
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Scope",
+                name: "Scopes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -75,11 +75,11 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Scope", x => x.Id);
+                    table.PrimaryKey("PK_Scopes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -93,11 +93,11 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClientPermission",
+                name: "ClientPermissions",
                 columns: table => new
                 {
                     ClientId = table.Column<int>(type: "integer", nullable: false),
@@ -106,23 +106,23 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClientPermission", x => new { x.ClientId, x.PermissionId });
+                    table.PrimaryKey("PK_ClientPermissions", x => new { x.ClientId, x.PermissionId });
                     table.ForeignKey(
-                        name: "FK_ClientPermission_Client_ClientId",
+                        name: "FK_ClientPermissions_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalTable: "Client",
+                        principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ClientPermission_Permission_PermissionId",
+                        name: "FK_ClientPermissions_Permissions_PermissionId",
                         column: x => x.PermissionId,
-                        principalTable: "Permission",
+                        principalTable: "Permissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PermissionRole",
+                name: "RolePermissions",
                 columns: table => new
                 {
                     PermissionsId = table.Column<int>(type: "integer", nullable: false),
@@ -130,23 +130,23 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PermissionRole", x => new { x.PermissionsId, x.RoleId });
+                    table.PrimaryKey("PK_RolePermissions", x => new { x.PermissionsId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_PermissionRole_Permission_PermissionsId",
+                        name: "FK_RolePermissions_Permissions_PermissionsId",
                         column: x => x.PermissionsId,
-                        principalTable: "Permission",
+                        principalTable: "Permissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PermissionRole_Role_RoleId",
+                        name: "FK_RolePermissions_Roles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "Role",
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClientScope",
+                name: "ClientScopes",
                 columns: table => new
                 {
                     ClientId = table.Column<int>(type: "integer", nullable: false),
@@ -154,30 +154,29 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClientScope", x => new { x.ClientId, x.ScopesId });
+                    table.PrimaryKey("PK_ClientScopes", x => new { x.ClientId, x.ScopesId });
                     table.ForeignKey(
-                        name: "FK_ClientScope_Client_ClientId",
+                        name: "FK_ClientScopes_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalTable: "Client",
+                        principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ClientScope_Scope_ScopesId",
+                        name: "FK_ClientScopes_Scopes_ScopesId",
                         column: x => x.ScopesId,
-                        principalTable: "Scope",
+                        principalTable: "Scopes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AuditLog",
+                name: "AuditLogs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     EventType = table.Column<string>(type: "text", nullable: false),
-                    EntityType = table.Column<string>(type: "text", nullable: true),
-                    EntityId = table.Column<string>(type: "text", nullable: true),
+                    EntityGuid = table.Column<Guid>(type: "uuid", nullable: true),
                     UserId = table.Column<int>(type: "integer", nullable: true),
                     ClientId = table.Column<int>(type: "integer", nullable: true),
                     Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -187,21 +186,21 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuditLog", x => x.Id);
+                    table.PrimaryKey("PK_AuditLogs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AuditLog_Client_ClientId",
+                        name: "FK_AuditLogs_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalTable: "Client",
+                        principalTable: "Clients",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AuditLog_User_UserId",
+                        name: "FK_AuditLogs_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "AuthorizationCode",
+                name: "AuthorizationCodes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -216,23 +215,23 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuthorizationCode", x => x.Id);
+                    table.PrimaryKey("PK_AuthorizationCodes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AuthorizationCode_Client_ClientId",
+                        name: "FK_AuthorizationCodes_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalTable: "Client",
+                        principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AuthorizationCode_User_UserId",
+                        name: "FK_AuthorizationCodes_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RefreshToken",
+                name: "RefreshTokens",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -247,47 +246,23 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshToken", x => x.Id);
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RefreshToken_Client_ClientId",
+                        name: "FK_RefreshTokens_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalTable: "Client",
+                        principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RefreshToken_User_UserId",
+                        name: "FK_RefreshTokens_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoleUser",
-                columns: table => new
-                {
-                    RolesId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RoleUser", x => new { x.RolesId, x.UserId });
-                    table.ForeignKey(
-                        name: "FK_RoleUser_Role_RolesId",
-                        column: x => x.RolesId,
-                        principalTable: "Role",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RoleUser_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserConsent",
+                name: "UserConsents",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "integer", nullable: false),
@@ -296,23 +271,23 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserConsent", x => new { x.UserId, x.ClientId });
+                    table.PrimaryKey("PK_UserConsents", x => new { x.UserId, x.ClientId });
                     table.ForeignKey(
-                        name: "FK_UserConsent_Client_ClientId",
+                        name: "FK_UserConsents_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalTable: "Client",
+                        principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserConsent_User_UserId",
+                        name: "FK_UserConsents_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserPermission",
+                name: "UserPermissions",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "integer", nullable: false),
@@ -322,208 +297,232 @@ namespace Sso.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserPermission", x => new { x.UserId, x.PermissionId });
+                    table.PrimaryKey("PK_UserPermissions", x => new { x.UserId, x.PermissionId });
                     table.ForeignKey(
-                        name: "FK_UserPermission_Permission_PermissionId",
+                        name: "FK_UserPermissions_Permissions_PermissionId",
                         column: x => x.PermissionId,
-                        principalTable: "Permission",
+                        principalTable: "Permissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserPermission_User_GrantedById",
+                        name: "FK_UserPermissions_Users_GrantedById",
                         column: x => x.GrantedById,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_UserPermission_User_UserId",
+                        name: "FK_UserPermissions_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    RolesId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => new { x.RolesId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RolesId",
+                        column: x => x.RolesId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuditLog_ClientId",
-                table: "AuditLog",
+                name: "IX_AuditLogs_ClientId",
+                table: "AuditLogs",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuditLog_UserId",
-                table: "AuditLog",
+                name: "IX_AuditLogs_UserId",
+                table: "AuditLogs",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuthorizationCode_ClientId",
-                table: "AuthorizationCode",
+                name: "IX_AuthorizationCodes_ClientId",
+                table: "AuthorizationCodes",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuthorizationCode_Code",
-                table: "AuthorizationCode",
+                name: "IX_AuthorizationCodes_Code",
+                table: "AuthorizationCodes",
                 column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuthorizationCode_Guid",
-                table: "AuthorizationCode",
+                name: "IX_AuthorizationCodes_Guid",
+                table: "AuthorizationCodes",
                 column: "Guid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuthorizationCode_UserId",
-                table: "AuthorizationCode",
+                name: "IX_AuthorizationCodes_UserId",
+                table: "AuthorizationCodes",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Client_ClientId",
-                table: "Client",
+                name: "IX_ClientPermissions_PermissionId",
+                table: "ClientPermissions",
+                column: "PermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clients_ClientId",
+                table: "Clients",
                 column: "ClientId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Client_Guid",
-                table: "Client",
+                name: "IX_Clients_Guid",
+                table: "Clients",
                 column: "Guid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientPermission_PermissionId",
-                table: "ClientPermission",
-                column: "PermissionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClientScope_ScopesId",
-                table: "ClientScope",
+                name: "IX_ClientScopes_ScopesId",
+                table: "ClientScopes",
                 column: "ScopesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Permission_Guid",
-                table: "Permission",
+                name: "IX_Permissions_Guid",
+                table: "Permissions",
                 column: "Guid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_PermissionRole_RoleId",
-                table: "PermissionRole",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RefreshToken_ClientId",
-                table: "RefreshToken",
+                name: "IX_RefreshTokens_ClientId",
+                table: "RefreshTokens",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshToken_Guid",
-                table: "RefreshToken",
+                name: "IX_RefreshTokens_Guid",
+                table: "RefreshTokens",
                 column: "Guid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshToken_Token",
-                table: "RefreshToken",
+                name: "IX_RefreshTokens_Token",
+                table: "RefreshTokens",
                 column: "Token",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshToken_UserId",
-                table: "RefreshToken",
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Role_Guid",
-                table: "Role",
+                name: "IX_RolePermissions_RoleId",
+                table: "RolePermissions",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roles_Guid",
+                table: "Roles",
                 column: "Guid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoleUser_UserId",
-                table: "RoleUser",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Scope_Guid",
-                table: "Scope",
+                name: "IX_Scopes_Guid",
+                table: "Scopes",
                 column: "Guid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Scope_Name",
-                table: "Scope",
+                name: "IX_Scopes_Name",
+                table: "Scopes",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_Email",
-                table: "User",
+                name: "IX_UserConsents_ClientId",
+                table: "UserConsents",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPermissions_GrantedById",
+                table: "UserPermissions",
+                column: "GrantedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPermissions_PermissionId",
+                table: "UserPermissions",
+                column: "PermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_UserId",
+                table: "UserRoles",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_Guid",
-                table: "User",
+                name: "IX_Users_Guid",
+                table: "Users",
                 column: "Guid",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserConsent_ClientId",
-                table: "UserConsent",
-                column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserPermission_GrantedById",
-                table: "UserPermission",
-                column: "GrantedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserPermission_PermissionId",
-                table: "UserPermission",
-                column: "PermissionId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AuditLog");
+                name: "AuditLogs");
 
             migrationBuilder.DropTable(
-                name: "AuthorizationCode");
+                name: "AuthorizationCodes");
 
             migrationBuilder.DropTable(
-                name: "ClientPermission");
+                name: "ClientPermissions");
 
             migrationBuilder.DropTable(
-                name: "ClientScope");
+                name: "ClientScopes");
 
             migrationBuilder.DropTable(
-                name: "PermissionRole");
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "RefreshToken");
+                name: "RolePermissions");
 
             migrationBuilder.DropTable(
-                name: "RoleUser");
+                name: "UserConsents");
 
             migrationBuilder.DropTable(
-                name: "UserConsent");
+                name: "UserPermissions");
 
             migrationBuilder.DropTable(
-                name: "UserPermission");
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "Scope");
+                name: "Scopes");
 
             migrationBuilder.DropTable(
-                name: "Role");
+                name: "Clients");
 
             migrationBuilder.DropTable(
-                name: "Client");
+                name: "Permissions");
 
             migrationBuilder.DropTable(
-                name: "Permission");
+                name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
         }
     }
 }

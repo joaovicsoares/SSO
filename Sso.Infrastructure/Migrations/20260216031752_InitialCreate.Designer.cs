@@ -12,7 +12,7 @@ using Sso.Infrastructure.Persistence;
 namespace Sso.Infrastructure.Migrations
 {
     [DbContext(typeof(SsoDbContext))]
-    [Migration("20260213224902_InitialCreate")]
+    [Migration("20260216031752_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Sso.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ClientScope", b =>
+            modelBuilder.Entity("ClientScopes", b =>
                 {
                     b.Property<int>("ClientId")
                         .HasColumnType("integer");
@@ -37,10 +37,10 @@ namespace Sso.Infrastructure.Migrations
 
                     b.HasIndex("ScopesId");
 
-                    b.ToTable("ClientScope");
+                    b.ToTable("ClientScopes");
                 });
 
-            modelBuilder.Entity("PermissionRole", b =>
+            modelBuilder.Entity("RolePermissions", b =>
                 {
                     b.Property<int>("PermissionsId")
                         .HasColumnType("integer");
@@ -52,22 +52,7 @@ namespace Sso.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("PermissionRole");
-                });
-
-            modelBuilder.Entity("RoleUser", b =>
-                {
-                    b.Property<int>("RolesId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("RolesId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RoleUser");
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.AuditLog", b =>
@@ -81,11 +66,8 @@ namespace Sso.Infrastructure.Migrations
                     b.Property<int?>("ClientId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("EntityId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EntityType")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("EntityGuid")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("EventType")
                         .IsRequired()
@@ -109,7 +91,7 @@ namespace Sso.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AuditLog");
+                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.AuthorizationCode", b =>
@@ -155,7 +137,7 @@ namespace Sso.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AuthorizationCode");
+                    b.ToTable("AuthorizationCodes");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.Client", b =>
@@ -199,7 +181,7 @@ namespace Sso.Infrastructure.Migrations
                     b.HasIndex("Guid")
                         .IsUnique();
 
-                    b.ToTable("Client");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.ClientPermission", b =>
@@ -217,7 +199,7 @@ namespace Sso.Infrastructure.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("ClientPermission");
+                    b.ToTable("ClientPermissions");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.Permission", b =>
@@ -246,7 +228,7 @@ namespace Sso.Infrastructure.Migrations
                     b.HasIndex("Guid")
                         .IsUnique();
 
-                    b.ToTable("Permission");
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.RefreshToken", b =>
@@ -291,7 +273,7 @@ namespace Sso.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.Role", b =>
@@ -320,7 +302,7 @@ namespace Sso.Infrastructure.Migrations
                     b.HasIndex("Guid")
                         .IsUnique();
 
-                    b.ToTable("Role");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.Scope", b =>
@@ -349,7 +331,7 @@ namespace Sso.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Scope");
+                    b.ToTable("Scopes");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.User", b =>
@@ -388,7 +370,7 @@ namespace Sso.Infrastructure.Migrations
                     b.HasIndex("Guid")
                         .IsUnique();
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.UserConsent", b =>
@@ -406,7 +388,7 @@ namespace Sso.Infrastructure.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("UserConsent");
+                    b.ToTable("UserConsents");
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.UserPermission", b =>
@@ -429,10 +411,25 @@ namespace Sso.Infrastructure.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("UserPermission");
+                    b.ToTable("UserPermissions");
                 });
 
-            modelBuilder.Entity("ClientScope", b =>
+            modelBuilder.Entity("UserRoles", b =>
+                {
+                    b.Property<int>("RolesId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RolesId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("ClientScopes", b =>
                 {
                     b.HasOne("Sso.Domain.Entities.Client", null)
                         .WithMany()
@@ -447,7 +444,7 @@ namespace Sso.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PermissionRole", b =>
+            modelBuilder.Entity("RolePermissions", b =>
                 {
                     b.HasOne("Sso.Domain.Entities.Permission", null)
                         .WithMany()
@@ -458,21 +455,6 @@ namespace Sso.Infrastructure.Migrations
                     b.HasOne("Sso.Domain.Entities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RoleUser", b =>
-                {
-                    b.HasOne("Sso.Domain.Entities.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RolesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Sso.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -493,7 +475,7 @@ namespace Sso.Infrastructure.Migrations
 
                             b1.HasKey("AuditLogId");
 
-                            b1.ToTable("AuditLog");
+                            b1.ToTable("AuditLogs");
 
                             b1
                                 .ToJson("Data")
@@ -609,6 +591,21 @@ namespace Sso.Infrastructure.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("UserRoles", b =>
+                {
+                    b.HasOne("Sso.Domain.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sso.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Sso.Domain.Entities.Client", b =>
