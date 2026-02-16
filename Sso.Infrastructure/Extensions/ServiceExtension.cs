@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Sso.Application.Persistence;
+using Sso.Domain.Repositories;
+using Sso.Domain.Services;
 using Sso.Infrastructure.Persistence;
+using Sso.Infrastructure.Persistence.Repositories;
+using Sso.Infrastructure.Persistence.Seeds;
 
 namespace Sso.Infrastructure.Extensions
 {
@@ -10,6 +15,16 @@ namespace Sso.Infrastructure.Extensions
         {
             public IServiceCollection AddInfrastructure()
             {
+                serviceCollection.AddScoped<ScopeService>();
+
+                serviceCollection.AddScoped<IScopeRepository, ScopeRepository>();
+
+                serviceCollection.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+                serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+
+                serviceCollection.AddScoped<ScopeSeed>();
+
                 return serviceCollection;
             }
         }
@@ -22,6 +37,9 @@ namespace Sso.Infrastructure.Extensions
                 {
                     var db = scope.ServiceProvider.GetRequiredService<SsoDbContext>();
                     await db.Database.MigrateAsync();
+
+                    var scopeSeed = scope.ServiceProvider.GetRequiredService<ScopeSeed>();
+                    await scopeSeed.SeedAsync();
                 }
 
                 return serviceProvider;
