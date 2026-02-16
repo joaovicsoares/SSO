@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sso.Domain.Entities;
 using Sso.Domain.ValueObjects;
 using Sso.Infrastructure.Persistence.Configurations;
 using Sso.Infrastructure.Persistence.Converters;
@@ -7,6 +8,28 @@ namespace Sso.Infrastructure.Persistence
 {
     public class SsoDbContext(DbContextOptions<SsoDbContext> options) : DbContext(options)
     {
+        public DbSet<User> Users { get; set; }
+
+        public DbSet<UserPermission> UserPermissions { get; set; }
+
+        public DbSet<UserConsent> UserConsents { get; set; }
+
+        public DbSet<Client> Clients { get; set; }
+
+        public DbSet<ClientPermission> ClientPermissions { get; set; }
+
+        public DbSet<Role> Roles { get; set; }
+
+        public DbSet<Scope> Scopes { get; set; }
+
+        public DbSet<Permission> Permissions { get; set; }
+
+        public DbSet<AuthorizationCode> AuthorizationCodes { get; set; }
+
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder
