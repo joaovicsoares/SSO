@@ -3,6 +3,7 @@ using Sso.Domain.ValueObjects;
 namespace Sso.Domain.Entities
 {
     public class User
+        : IEntityByGuid
     {
         public int Id { get; init; } = 0;
 

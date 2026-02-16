@@ -1,6 +1,7 @@
 namespace Sso.Domain.Entities
 {
     public class RefreshToken
+        : IEntityByGuid
     {
         public static TimeSpan DefaultExpirationTime => TimeSpan.FromMinutes(5);
 

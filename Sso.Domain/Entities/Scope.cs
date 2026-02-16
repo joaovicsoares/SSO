@@ -1,6 +1,7 @@
 namespace Sso.Domain.Entities
 {
     public class Scope
+        : IEntityByGuid
     {
         public int Id { get; init; } = 0;
 

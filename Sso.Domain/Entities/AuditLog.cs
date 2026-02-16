@@ -4,13 +4,21 @@ namespace Sso.Domain.Entities
 {
     public class AuditLog
     {
+        public AuditLog()
+        {
+
+        }
+
+        public AuditLog(IEntityByGuid relatedEntity)
+        {
+            EntityGuid = relatedEntity.Guid;
+        }
+
         public int Id { get; init; } = 0;
 
         public required EventType EventType { get; init; }
 
-        public EntityType? EntityType { get; init; }
-
-        public string? EntityId { get; init; }
+        public Guid? EntityGuid { get; private init; }
 
         public int? UserId { get; private init; }
         public User? User

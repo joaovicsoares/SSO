@@ -1,6 +1,7 @@
 namespace Sso.Domain.Entities
 {
     public class Client
+        : IEntityByGuid
     {
         public int Id { get; init; } = 0;
 

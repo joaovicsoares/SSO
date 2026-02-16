@@ -1,6 +1,7 @@
 namespace Sso.Domain.Entities
 {
     public class AuthorizationCode
+        : IEntityByGuid
     {
         public static TimeSpan DefaultExpirationTime => TimeSpan.FromHours(1);
 

@@ -1,6 +1,7 @@
 namespace Sso.Domain.Entities
 {
     public class Role
+        : IEntityByGuid
     {
         public int Id { get; init; } = 0;
 
