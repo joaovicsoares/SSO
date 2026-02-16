@@ -9,6 +9,10 @@ namespace Sso.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<UserPermission> builder)
         {
             builder.HasKey(x => new { x.UserId, x.PermissionId });
+
+            builder.HasOne(x => x.User).WithMany(x => x.UserPermissions).HasForeignKey(x => x.UserId);
+
+            builder.HasOne(x => x.Permission).WithMany().HasForeignKey(x => x.PermissionId);
         }
     }
 }

@@ -14,9 +14,9 @@ namespace Sso.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.Code).IsUnique();
 
-            builder.HasOne(x => x.User).WithMany();
+            builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
 
-            builder.HasOne(x => x.Client).WithMany();
+            builder.HasOne(x => x.Client).WithMany().HasForeignKey(x => x.ClientId);
         }
     }
 }

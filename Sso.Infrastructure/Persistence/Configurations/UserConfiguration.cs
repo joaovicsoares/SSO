@@ -14,7 +14,7 @@ namespace Sso.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.Email).IsUnique();
 
-            builder.HasMany(x => x.Roles).WithMany();
+            builder.HasMany(x => x.Roles).WithMany().UsingEntity("UserRoles");
 
             builder.HasMany(x => x.UserPermissions).WithOne(x => x.User);
         }

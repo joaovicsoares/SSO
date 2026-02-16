@@ -12,7 +12,7 @@ namespace Sso.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.Guid).IsUnique();
 
-            builder.HasMany(x => x.Permissions).WithMany();
+            builder.HasMany(x => x.Permissions).WithMany().UsingEntity("RolePermissions");
         }
     }
 }
