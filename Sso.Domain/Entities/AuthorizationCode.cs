@@ -3,7 +3,7 @@ namespace Sso.Domain.Entities
     public class AuthorizationCode
         : IEntityByGuid
     {
-        public static TimeSpan DefaultExpirationTime => TimeSpan.FromHours(1);
+        public static TimeSpan DefaultExpirationTime => TimeSpan.FromMinutes(10);
 
         public int Id { get; init; } = 0;
 

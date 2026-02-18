@@ -3,7 +3,7 @@ namespace Sso.Domain.Entities
     public class RefreshToken
         : IEntityByGuid
     {
-        public static TimeSpan DefaultExpirationTime => TimeSpan.FromMinutes(5);
+        public static TimeSpan DefaultExpirationTime => TimeSpan.FromDays(30);
 
         public int Id { get; init; } = 0;
 
