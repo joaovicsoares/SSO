@@ -1,11 +1,12 @@
 using Sso.Infrastructure.Persistence;
+using Sso.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var conStr = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
-        "Connection string 'DefaultConnection' n„o foi configurada.");
+        "Connection string 'DefaultConnection' n√£o foi configurada.");
 
 builder.Services.AddDbContext<SsoDbContext>(options =>
     options.UseNpgsql(conStr));
@@ -14,6 +15,8 @@ builder.Services.AddHealthChecks()
     .AddNpgSql(conStr);
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 
@@ -45,6 +48,8 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast");
 
 app.MapHealthChecks("/health");
+
+await app.Services.InitInfrastructureAsync();
 
 app.Run();
 
