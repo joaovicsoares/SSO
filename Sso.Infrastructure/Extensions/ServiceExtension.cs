@@ -6,6 +6,7 @@ using Sso.Domain.Services;
 using Sso.Infrastructure.Persistence;
 using Sso.Infrastructure.Persistence.Repositories;
 using Sso.Infrastructure.Persistence.Seeds;
+using Sso.Infrastructure.Security;
 
 namespace Sso.Infrastructure.Extensions
 {
@@ -24,6 +25,9 @@ namespace Sso.Infrastructure.Extensions
                 serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
                 serviceCollection.AddScoped<ScopeSeed>();
+
+                // Register password hasher
+                serviceCollection.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
 
                 return serviceCollection;
             }
