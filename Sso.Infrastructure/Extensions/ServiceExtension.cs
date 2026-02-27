@@ -22,6 +22,8 @@ namespace Sso.Infrastructure.Extensions
 
                 serviceCollection.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
+                serviceCollection.AddScoped<IUserRepository, UserRepository>();
+
                 serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
                 serviceCollection.AddScoped<ScopeSeed>();
