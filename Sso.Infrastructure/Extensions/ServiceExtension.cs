@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sso.Application.Persistence;
+using Sso.Application.Authentication;
 using Sso.Domain.Repositories;
 using Sso.Domain.Services;
 using Sso.Infrastructure.Persistence;
