@@ -2,14 +2,16 @@ using Sso.Domain.Repositories;
 using Sso.Domain.Services;
 using Sso.Application.Persistence;
 using Sso.Application.DTOs;
+using Sso.Domain.ValueObjects;
 
 namespace Sso.Application.Authentication;
 
 public class AuthenticationService(
     IUserRepository userRepository,
     IPasswordHasher passwordHasher,
-    IAuditLogRepository auditLogRepository,
-    IUnitOfWork unitOfWork)
+    // IAuditLogRepository auditLogRepository,
+    // IUnitOfWork unitOfWork
+    ) : IAuthenticationService
 {
     // Hash pré-computado usado para manter tempo de resposta constante
     // quando o email não existe (prevenção de timing attack)
@@ -22,7 +24,14 @@ public class AuthenticationService(
         string? userAgent = null,
         CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetByEmailAsync(loginRequest.Email, cancellationToken);
+        if (!Email.IsValid(loginRequest.Email))
+        {
+            //adicionar Log no futuro
+            passwordHasher.VerifyPassword(loginRequest.Password, DummyHash);
+            return null;
+        }
+        var email = new Email(loginRequest.Email);
+        var user = await userRepository.GetByEmailAsync(email, cancellationToken);
 
         if (user is null)
         {
@@ -43,6 +52,6 @@ public class AuthenticationService(
             return null;
         }
 
-        return new LoginResponse(user.Guid, user.Email, user.Name);
+        return new LoginResponse(user.Guid.ToString(), user.Email.Value, user.Name);
     }
 }
