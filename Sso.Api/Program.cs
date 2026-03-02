@@ -13,6 +13,20 @@ builder.Services.AddDbContext<SsoDbContext>(options =>
 builder.Services.AddHealthChecks()
     .AddNpgSql(conStr);
 
+var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(origins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+
 var cookieName = builder.Configuration.GetValue<string>("Authentication:CookieName") ?? "SsoAuth";
 var cookieDurationHours = builder.Configuration.GetValue<int>("Authentication:CookieDurationHours", 8);
 
@@ -51,6 +65,7 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
