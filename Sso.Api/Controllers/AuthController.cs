@@ -56,4 +56,15 @@ public class AuthController(IAuthService authenticationService) : ControllerBase
 
         return Ok(new { message = "Logout realizado com sucesso" });
     }
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe()
+    {
+        var guid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var name = User.FindFirstValue(ClaimTypes.Name);
+
+        return Ok(new { guid, email, name });
+    }
 }
