@@ -8,7 +8,7 @@ namespace Sso.Application.Authentication;
 
 public class AuthenticationService(
     IUserRepository userRepository,
-    IPasswordHasher passwordHasher,
+    IPasswordHasher passwordHasher
     // IAuditLogRepository auditLogRepository,
     // IUnitOfWork unitOfWork
     ) : IAuthenticationService
