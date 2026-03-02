@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IAuthService = Sso.Application.Authentication.IAuthenticationService;
+using Microsoft.AspNetCore.RateLimiting;
 using Sso.Application.DTOs;
 
 namespace Sso.Api.Controllers;
@@ -13,6 +14,7 @@ namespace Sso.Api.Controllers;
 public class AuthController(IAuthService authenticationService) : ControllerBase
 {
     [HttpPost("login")]
+    [EnableRateLimiting("login")]
     public async Task<IActionResult> LoginAsync([FromBody]LoginRequest loginRequest, CancellationToken cancellationToken){
         var ipAdress = HttpContext.Connection.RemoteIpAddress?.ToString();
         var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
