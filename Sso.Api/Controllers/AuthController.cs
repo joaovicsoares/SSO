@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sso.Application.Authentication;
+using IAuthService = Sso.Application.Authentication.IAuthenticationService;
 using Sso.Application.DTOs;
 
 namespace Sso.Api.Controllers;
 
 [ApiController]
-[Route("api/[auth]")]
-public calss AuthController(IAuthenticationService authenticationService) : ControllerBase
+[Route("api/[controller]")]
+public class AuthController(IAuthService authenticationService) : ControllerBase
 {
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody]LoginRequest loginRequest, CancellationToken cancellationToken){
@@ -20,7 +20,7 @@ public calss AuthController(IAuthenticationService authenticationService) : Cont
 
         if(result is null)
         {
-            return BadRequest("Invalid credentials");
+            return Unauthorized("Credenciais inválidas");
         }
 
         var claims = new List<Claim>
@@ -45,5 +45,15 @@ public calss AuthController(IAuthenticationService authenticationService) : Cont
             principal);
             
         return Ok(new { message = "Login realizado com sucesso" });
+    }
+
+    [Authorize]
+    [HttpPost("Logout")]
+    public async Task<IActionResult> LogoutAsync()
+    {
+        await HttpContext.SignOutAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme);
+
+        return Ok(new { message = "Logout realizado com sucesso" });
     }
 }
