@@ -31,8 +31,10 @@ namespace Sso.Infrastructure.Extensions
 
                 serviceCollection.AddScoped<ScopeSeed>();
 
-                // Register password hasher
-                serviceCollection.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
+                serviceCollection.AddScoped<UserSeed>();
+
+            // Register password hasher
+            serviceCollection.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
 
                 return serviceCollection;
             }
@@ -49,7 +51,10 @@ namespace Sso.Infrastructure.Extensions
 
                     var scopeSeed = scope.ServiceProvider.GetRequiredService<ScopeSeed>();
                     await scopeSeed.SeedAsync();
-                }
+
+                    var userSeed = scope.ServiceProvider.GetRequiredService<UserSeed>();
+                    await userSeed.SeedAsync();
+            }
 
                 return serviceProvider;
             }
