@@ -10,10 +10,16 @@ var conStr = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
         "Connection string 'DefaultConnection' não foi configurada.");
 
-builder.Services.AddDbContext<SsoDbContext>(options =>
-    options.UseNpgsql(conStr));
-builder.Services.AddHealthChecks()
-    .AddNpgSql(conStr);
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<SsoDbContext>(options =>
+        options.UseNpgsql(conStr));
+}
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHealthChecks()
+        .AddNpgSql(conStr);
+}
 
 var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
@@ -120,9 +126,14 @@ app.MapGet("/weatherforecast", () =>
 app.MapHealthChecks("/health");
 app.MapControllers();
 
-await app.Services.InitInfrastructureAsync();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await app.Services.InitInfrastructureAsync();
+}
 
 app.Run();
+
+public partial class Program { }
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

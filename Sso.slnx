@@ -8,4 +8,5 @@
   <Project Path="Sso.Application/Sso.Application.csproj" />
   <Project Path="Sso.Domain/Sso.Domain.csproj" />
   <Project Path="Sso.Infrastructure/Sso.Infrastructure.csproj" />
+  <Project Path="Sso.IntegrationTests/Sso.IntegrationTests.csproj" />
 </Solution>
