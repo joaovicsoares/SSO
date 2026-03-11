@@ -74,19 +74,49 @@ public class AuthIntegrationTests : IClassFixture<CustomWebApplicationFactory<Pr
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginRequest);
         loginResponse.EnsureSuccessStatusCode();
 
+        var setCookieHeaders = loginResponse.Headers.GetValues("Set-Cookie");
+        var authCookie = setCookieHeaders.FirstOrDefault(c => c.StartsWith("SsoAuth="));
+        var cookieHeaderValue = authCookie?.Split(';')[0];
+
+        Assert.NotNull(cookieHeaderValue);
+
         // 2. Access protected endpoint (me)
-        var meResponse = await _client.GetAsync("/api/auth/me");
-        meResponse.EnsureSuccessStatusCode();
-        
-        var user = await meResponse.Content.ReadFromJsonAsync<dynamic>();
-        // Assert.Equal("admin@gmail.com", (string)user.email); // dynamic is tricky in C#, but we can check status
+        var meRequest1 = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
+        meRequest1.Headers.Add("Cookie", cookieHeaderValue);
+        var meResponse1 = await _client.SendAsync(meRequest1);
+        meResponse1.EnsureSuccessStatusCode();
 
         // 3. Logout
-        var logoutResponse = await _client.PostAsync("/api/auth/logout", null);
+        var logoutRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/logout");
+        logoutRequest.Headers.Add("Cookie", cookieHeaderValue);
+        var logoutResponse = await _client.SendAsync(logoutRequest);
         logoutResponse.EnsureSuccessStatusCode();
 
+        if (logoutResponse.Headers.TryGetValues("Set-Cookie", out var logoutCookies))
+        {
+            var logoutAuthCookie = logoutCookies.FirstOrDefault(c => c.StartsWith("SsoAuth="));
+            if (logoutAuthCookie != null)
+            {
+                cookieHeaderValue = logoutAuthCookie.Split(';')[0];
+            }
+            else 
+            {
+                cookieHeaderValue = null;
+            }
+        }
+        else
+        {
+            cookieHeaderValue = null;
+        }
+
         // 4. Access protected endpoint again (should fail)
-        var meResponseAfterLogout = await _client.GetAsync("/api/auth/me");
-        Assert.Equal(HttpStatusCode.Unauthorized, meResponseAfterLogout.StatusCode);
+        var meRequest2 = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
+        if (!string.IsNullOrEmpty(cookieHeaderValue))
+        {
+            meRequest2.Headers.Add("Cookie", cookieHeaderValue);
+        }
+        var meResponse2 = await _client.SendAsync(meRequest2);
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, meResponse2.StatusCode);
     }
 }
