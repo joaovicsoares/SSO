@@ -9,14 +9,14 @@ public class UserRepository(SsoDbContext context) : IUserRepository
 {
     public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
     {
-        return await context.Users.FirstOrDefaultAsync(
+        return await context.Users.AsNoTracking().FirstOrDefaultAsync(
             x => x.Email == email, cancellationToken
         );
     }
 
     public async Task<User?> GetByGuidAsync(Guid guid, CancellationToken cancellationToken = default)
     {
-        return await context.Users.FirstOrDefaultAsync(
+        return await context.Users.AsNoTracking().FirstOrDefaultAsync(
             x => x.Guid == guid, cancellationToken
         );
     }
