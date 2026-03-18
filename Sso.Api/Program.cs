@@ -1,5 +1,6 @@
 using Sso.Infrastructure.Persistence;
 using Sso.Infrastructure.Extensions;
+using Sso.Application.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.RateLimiting;
@@ -90,6 +91,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 
 builder.Services.AddInfrastructure();
+builder.Services.AddApplication();
 
 var app = builder.Build();
 

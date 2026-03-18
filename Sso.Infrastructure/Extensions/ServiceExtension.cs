@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sso.Application.Persistence;
-using Sso.Application.Authentication;
 using Sso.Domain.Repositories;
 using Sso.Domain.Services;
 using Sso.Infrastructure.Persistence;
@@ -25,7 +24,7 @@ namespace Sso.Infrastructure.Extensions
 
                 serviceCollection.AddScoped<IUserRepository, UserRepository>();
 
-                serviceCollection.AddScoped<IAuthenticationService, AuthenticationService>();
+                //serviceCollection.AddScoped<IAuthenticationService, AuthenticationService>();
 
                 serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
