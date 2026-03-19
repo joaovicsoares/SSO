@@ -33,8 +33,6 @@ namespace Sso.Domain.ValueObjects
             if (dotIndex <= 0 || dotIndex == domainPart.Length - 1)
                 return false;
 
-            if (emailString.Contains('_'))
-                return false;
 
             foreach (char c in localPart)
             {

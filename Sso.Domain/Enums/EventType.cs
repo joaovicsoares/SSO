@@ -5,5 +5,8 @@ namespace Sso.Domain.Enums
         UserCreated,
         RoleCreated,
         ScopeCreated,
+        LoginSuccess,
+        LoginFailed,
+        Logout,
     }
 }

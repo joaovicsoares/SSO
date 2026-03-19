@@ -6,6 +6,7 @@ using Sso.Domain.Services;
 using Sso.Infrastructure.Persistence;
 using Sso.Infrastructure.Persistence.Repositories;
 using Sso.Infrastructure.Persistence.Seeds;
+using Sso.Infrastructure.Security;
 
 namespace Sso.Infrastructure.Extensions
 {
@@ -21,9 +22,18 @@ namespace Sso.Infrastructure.Extensions
 
                 serviceCollection.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
+                serviceCollection.AddScoped<IUserRepository, UserRepository>();
+
+                //serviceCollection.AddScoped<IAuthenticationService, AuthenticationService>();
+
                 serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
                 serviceCollection.AddScoped<ScopeSeed>();
+
+                serviceCollection.AddScoped<UserSeed>();
+
+            // Register password hasher
+            serviceCollection.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
 
                 return serviceCollection;
             }
@@ -40,7 +50,10 @@ namespace Sso.Infrastructure.Extensions
 
                     var scopeSeed = scope.ServiceProvider.GetRequiredService<ScopeSeed>();
                     await scopeSeed.SeedAsync();
-                }
+
+                    var userSeed = scope.ServiceProvider.GetRequiredService<UserSeed>();
+                    await userSeed.SeedAsync();
+            }
 
                 return serviceProvider;
             }

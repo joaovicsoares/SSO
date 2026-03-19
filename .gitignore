@@ -5,6 +5,8 @@ bin/
 obj/
 out/
 
+important
+
 *.user
 *.suo
 *.userosscache
