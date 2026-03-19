@@ -1,1958 +1,1370 @@
 # Product Backlog – Sistema de Single Sign-On (SSO)
+## Abordagem por Vertical Slices
 
 ## Informações do Documento
 
-**Versão:** 1.0  
-**Data:** 03/02/2026  
+**Versão:** 2.0  
+**Data:** 19/03/2026  
 **Projeto:** Sistema de Single Sign-On (SSO)  
-**Metodologia:** Desenvolvimento Incremental baseado em PBIs
+**Metodologia:** Vertical Slices - Entregas incrementais de valor end-to-end
 
 ---
 
 ## Índice
 
-1. [Visão Geral do Backlog](#1-visão-geral-do-backlog)
-2. [Estrutura das PBIs](#2-estrutura-das-pbis)
-3. [Roadmap de Desenvolvimento](#3-roadmap-de-desenvolvimento)
-4. [Product Backlog Items](#4-product-backlog-items)
+1. [Visão Geral da Abordagem](#1-visão-geral-da-abordagem)
+2. [Estrutura das Slices](#2-estrutura-das-slices)
+3. [Roadmap de Entregas](#3-roadmap-de-entregas)
+4. [Vertical Slices](#4-vertical-slices)
 
 ---
 
-## 1. Visão Geral do Backlog
+## 1. Visão Geral da Abordagem
 
-Este documento organiza o desenvolvimento do Sistema SSO em **20 PBIs** (Product Backlog Items) priorizadas e sequenciadas para entrega incremental de valor.
+Este backlog foi reorganizado usando **Vertical Slices** ao invés de camadas horizontais. Cada slice entrega uma funcionalidade completa e utilizável, atravessando todas as camadas da arquitetura.
 
-### 1.1 Princípios de Organização
+### 1.1 Princípios de Vertical Slices
 
-- **Dependências técnicas** foram consideradas na sequência
-- **Valor de negócio** foi balanceado com complexidade técnica
-- **Entregas incrementais** permitem validação contínua
-- **Critérios de aceitação** são testáveis e mensuráveis
+- **Valor end-to-end**: Cada slice entrega funcionalidade completa e testável
+- **Independência**: Slices podem ser desenvolvidas em paralelo quando possível
+- **Feedback rápido**: Funcionalidades podem ser validadas imediatamente
+- **Redução de risco**: Problemas são descobertos cedo no ciclo
 
-### 1.2 Estimativas
+### 1.2 Diferença da Abordagem Anterior
 
-As estimativas utilizam **Story Points** (escala Fibonacci: 1, 2, 3, 5, 8, 13, 21) baseadas em:
-- Complexidade técnica
-- Esforço de desenvolvimento
-- Incertezas e riscos
+**Antes (Horizontal):**
+```
+Sprint 1: Toda infraestrutura
+Sprint 2: Todo banco de dados
+Sprint 3: Todas entidades
+Sprint 4: Todos repositories
+```
+
+**Agora (Vertical):**
+```
+Slice 1: Login básico funcionando (infra + DB + entidades + API + testes)
+Slice 2: OAuth flow mínimo funcionando (tudo necessário para um client se autenticar)
+Slice 3: Gestão de usuários funcionando (CRUD completo com UI)
+```
 
 ---
 
-## 2. Estrutura das PBIs
+## 2. Estrutura das Slices
 
-Cada PBI contém:
+Cada slice contém:
 
 - **ID e Título**
-- **Descrição**: Contexto e objetivo
-- **Prioridade**: Alta, Média ou Baixa
+- **Valor de Negócio**: O que o usuário/sistema ganha
+- **Descrição**: Funcionalidade entregue
 - **Story Points**: Estimativa de esforço
-- **Dependências**: PBIs predecessoras
-- **Análise Técnica**: Detalhamento da implementação
-- **Ferramentas e Tecnologias**: Stack sugerido
+- **Dependências**: Slices predecessoras
+- **Escopo Técnico**: O que será implementado em cada camada
 - **Critérios de Aceitação**: Condições para conclusão
-- **Testes**: Estratégia de validação
+- **Demo**: Como demonstrar a funcionalidade
 - **Riscos**: Pontos de atenção
 
 ---
 
-## 3. Roadmap de Desenvolvimento
+## 3. Roadmap de Entregas
 
-### Sprint 1 - Fundação (PBIs 1-4)
-Infraestrutura básica, banco de dados e autenticação simples
+### Fase 1 - MVP Funcional (Slices 1-4)
+SSO básico funcionando com OAuth 2.0 para um client web
 
-### Sprint 2 - Core OAuth 2.0 (PBIs 5-8)
-Implementação do Authorization Code Flow completo
+### Fase 2 - Suporte Mobile (Slices 5-6)
+PKCE e suporte completo para apps mobile
 
-### Sprint 3 - OpenID Connect (PBIs 9-11)
-ID Tokens, UserInfo e descoberta OIDC
+### Fase 3 - Autorização Avançada (Slices 7-9)
+RBAC, permissions e consentimento
 
-### Sprint 4 - Autorização (PBIs 12-14)
-RBAC, permissões e consentimento
-
-### Sprint 5 - Interface de Usuário (PBIs 15-17)
-UIs de login, cadastro e administração
-
-### Sprint 6 - Segurança e Produção (PBIs 18-20)
-Auditoria, segurança avançada e otimizações
+### Fase 4 - Gestão e Operação (Slices 10-12)
+UIs administrativas e auditoria
 
 ---
 
-## 4. Product Backlog Items
+## 4. Vertical Slices
 
 ---
 
-### PBI-001: Configuração da Infraestrutura Inicial do Projeto
+### SLICE-001: Autenticação Básica End-to-End
 
 **Prioridade:** Alta  
-**Story Points:** 3  
+**Story Points:** 13  
 **Dependências:** Nenhuma
 
-#### Descrição
+#### Valor de Negócio
 
-Configurar a estrutura base do projeto, incluindo repositório, arquitetura de pastas, CI/CD básico e ambientes de desenvolvimento.
-
-#### Análise Técnica
-
-**Estrutura do Projeto:**
-- Arquitetura em camadas (Presentation, Application, Domain, Infrastructure)
-- Separação entre SSO Server e Admin UI
-- Configuração de ambientes (Development, Staging, Production)
-
-**Componentes:**
-1. Repositório Git com branching strategy (GitFlow)
-2. Estrutura de pastas seguindo Clean Architecture
-3. Configuração de ambiente Docker para desenvolvimento
-4. Pipeline CI/CD básico (build e testes unitários)
-5. Documentação inicial (README, CONTRIBUTING)
-
-#### Ferramentas e Tecnologias
-
-**Backend:**
-- .NET 8 / ASP.NET Core
-- Docker e Docker Compose
-- Git / GitHub ou GitLab
-
-**CI/CD:**
-- GitHub Actions ou GitLab CI
-- SonarQube (análise de código)
-
-**Documentação:**
-- Markdown para docs
-- Swagger/OpenAPI para documentação de APIs
-
-#### Critérios de Aceitação
-
-- [ ] Repositório criado com estrutura de pastas definida
-- [ ] Docker Compose configurado para desenvolvimento local
-- [ ] Pipeline CI executando build com sucesso
-- [ ] README com instruções de setup
-- [ ] Branching strategy documentada
-- [ ] Ambientes (dev, staging, prod) configurados
-
-#### Testes
-
-- Pipeline CI executando com sucesso
-- Build local funcionando via Docker
-- Validação de estrutura de pastas
-
-#### Riscos
-
-- **Baixo:** Tecnologias maduras e bem documentadas
-- Definição de padrões arquiteturais pode gerar debates
-
----
-
-### PBI-002: Modelagem e Criação do Banco de Dados
-
-**Prioridade:** Alta  
-**Story Points:** 5  
-**Dependências:** PBI-001
+Usuários podem fazer login no sistema com email/senha através de uma API REST segura, com sessão persistente e proteção contra ataques.
 
 #### Descrição
 
-Implementar o modelo de dados completo conforme especificação, incluindo todas as tabelas, relacionamentos, índices e migrations.
+Implementar o fluxo completo de autenticação básica, desde a infraestrutura até a API funcional, incluindo banco de dados, entidades, serviços e testes.
 
-#### Análise Técnica
 
-**Modelo de Dados:**
+#### Escopo Técnico
 
-Implementação de 12 tabelas:
-1. Users
-2. Roles
-3. Permissions
-4. RolePermissions
-5. UserRoles
-6. UserPermissions
-7. Clients
-8. ClientPermissions
-9. Scopes
-10. ClientScopes
-11. UserConsents
-12. AuthorizationCodes
-13. RefreshTokens
-14. AuditLogs
-
-**Decisões Técnicas:**
-- Primary Keys: GUIDs para distribuição e segurança
-- Timestamps: UTC em todas as tabelas
-- Soft Delete: campo IsActive/IsDeleted onde aplicável
-- Índices: em chaves estrangeiras e campos de busca frequente
-
-#### Ferramentas e Tecnologias
-
-**ORM:**
-- Entity Framework Core 8
+**Infraestrutura:**
+- Setup do projeto (.NET 10, Clean Architecture)
+- Docker Compose (PostgreSQL + API)
+- CI/CD básico (GitHub Actions)
 
 **Banco de Dados:**
-- PostgreSQL 15+ (recomendado) ou SQL Server 2019+
-
-**Migrations:**
-- EF Core Migrations
-- Scripts SQL versionados
-
-**Ferramentas:**
-- DbUp ou FluentMigrator (alternativa)
-- pgAdmin ou DBeaver (administração)
-
-#### Critérios de Aceitação
-
-- [ ] Todas as 13 tabelas criadas via migrations
-- [ ] Relacionamentos e constraints implementados
-- [ ] Índices criados em campos críticos
-- [ ] Seeds de dados iniciais (scopes padrão: openid, profile, email)
-- [ ] Documentação do modelo de dados (diagrama ER)
-- [ ] Migrations executando em todos os ambientes
-- [ ] Rollback de migrations funcional
-
-#### Testes
-
-- Migrations aplicadas com sucesso
-- Constraints validadas (FK, unique, not null)
-- Seeds executados corretamente
-- Rollback testado
-
-#### Riscos
-
-- **Médio:** Mudanças futuras no modelo podem requerer migrações complexas
-- Escolha do banco de dados impacta performance (PostgreSQL recomendado)
-
----
-
-### PBI-003: Implementação de Entidades de Domínio e Repositories
-
-**Prioridade:** Alta  
-**Story Points:** 5  
-**Dependências:** PBI-002
-
-#### Descrição
-
-Criar as entidades de domínio (Domain Models) e implementar o padrão Repository para acesso a dados, garantindo separação de responsabilidades.
-
-#### Análise Técnica
+- Tabela Users (Id, Email, PasswordHash, Name, IsActive, CreatedAt)
+- Migrations com EF Core
+- Seeds iniciais
 
 **Domain Layer:**
-- Entidades ricas (não anêmicas) com comportamentos
-- Value Objects para conceitos como Email, Password
-- Domain Events para ações críticas
+- Entidade User com comportamentos (SetPassword, Activate)
+- Value Object Email
+- Interface IUserRepository
+- Interface IPasswordHasher
 
-**Repository Pattern:**
-- Interfaces na camada de domínio
-- Implementações na camada de infraestrutura
-- Unit of Work para transações
+**Application Layer:**
+- AuthenticationService
+- DTO LoginRequest
+- Validações com FluentValidation
 
-**Entidades Principais:**
-```csharp
-- User (com métodos SetPassword, Activate, Deactivate)
-- Role (com métodos AddPermission, RemovePermission)
-- Permission
-- Client (com métodos ValidateRedirectUri, AddScope)
-- RefreshToken (com métodos Rotate, Revoke)
-- AuthorizationCode (com método MarkAsUsed)
-```
+**Infrastructure Layer:**
+- UserRepository (EF Core)
+- PasswordHasher (Argon2id ou BCrypt)
+- DbContext configurado
 
-#### Ferramentas e Tecnologias
+**API Layer:**
+- AuthController com endpoints:
+  - POST /api/auth/login
+  - POST /api/auth/logout
+  - GET /api/auth/me
+- Cookie authentication configurado
+- Rate limiting (5 tentativas/min)
+- CORS configurado
 
-**Padrões:**
-- Domain-Driven Design (DDD)
-- Repository Pattern
-- Unit of Work Pattern
+**Segurança:**
+- Password hashing seguro
+- HttpOnly, Secure, SameSite cookies
+- Account lockout (5 tentativas)
+- Mensagens de erro genéricas
 
-**Bibliotecas:**
-- FluentValidation (validações de domínio)
-- MediatR (domain events - opcional)
-
-#### Critérios de Aceitação
-
-- [ ] Todas as entidades de domínio criadas
-- [ ] Value Objects implementados (Email, Password)
-- [ ] Interfaces de Repository definidas
-- [ ] Implementações de Repository com EF Core
-- [ ] Unit of Work implementado
-- [ ] Validações de domínio funcionando
-- [ ] Testes unitários das entidades (>80% cobertura)
-
-#### Testes
-
-**Testes Unitários:**
-- Comportamentos das entidades
-- Validações de domínio
-- Value Objects
-
-**Testes de Integração:**
-- Repositories com banco de dados
-- Operações CRUD
-
-#### Riscos
-
-- **Baixo:** Padrões bem estabelecidos
-- Over-engineering: manter simplicidade quando possível
-
----
-
-### PBI-004: Sistema de Autenticação Básico (Login com Email/Senha)
-
-**Prioridade:** Alta  
-**Story Points:** 8  
-**Dependências:** PBI-003
-
-#### Descrição
-
-Implementar autenticação básica de usuários com email e senha, incluindo hashing seguro, sessão e proteções contra ataques.
-
-#### Análise Técnica
-
-**Componentes:**
-
-1. **Password Hashing:**
-   - Algoritmo: Argon2id (OWASP recomendado)
-   - Fallback: BCrypt (mínimo aceitável)
-   - Salt automático por usuário
-
-2. **Sessão:**
-   - Cookie-based authentication
-   - Flags: HttpOnly, Secure, SameSite=Strict
-   - Duração configurável (padrão: 8 horas)
-
-3. **Proteções:**
-   - Rate limiting por IP e usuário
-   - Account lockout após N tentativas falhas
-   - Mensagens genéricas (evitar enumeração)
-   - Logging de tentativas
-
-**Endpoints:**
-```
-POST /auth/login
-POST /auth/logout
-GET  /auth/session (validação de sessão)
-```
-
-#### Ferramentas e Tecnologias
-
-**Hashing:**
-- Konscious.Security.Cryptography.Argon2 (Argon2id)
-- BCrypt.Net-Next (alternativa)
-
-**Rate Limiting:**
-- AspNetCoreRateLimit
-- Redis (storage distribuído)
-
-**Session:**
-- ASP.NET Core Cookie Authentication
-- Data Protection API
+**Testes:**
+- Testes unitários (domain, application)
+- Testes de integração (API completa)
+- Cobertura mínima: 80%
 
 #### Critérios de Aceitação
 
-- [ ] Endpoint de login funcional
-- [ ] Senhas hasheadas com Argon2id ou BCrypt
-- [ ] Cookie de sessão seguro (HttpOnly, Secure, SameSite)
-- [ ] Rate limiting ativo (5 tentativas/min por IP)
-- [ ] Account lockout após 5 tentativas falhas (15 min)
-- [ ] Logout invalidando sessão
-- [ ] Mensagens de erro genéricas
-- [ ] Logs de autenticação registrados
+- [ ] Projeto compila e roda via Docker Compose
+- [ ] Usuário pode fazer login com credenciais válidas
+- [ ] Login retorna cookie de sessão seguro
+- [ ] Endpoint /me retorna dados do usuário autenticado
+- [ ] Logout invalida sessão
+- [ ] Credenciais inválidas retornam 401
+- [ ] Rate limiting bloqueia após 5 tentativas
+- [ ] Account lockout funciona (15 min)
+- [ ] Senhas hasheadas com Argon2id/BCrypt
+- [ ] Testes passando (unitários + integração)
+- [ ] CI/CD executando build e testes
 
-#### Testes
+#### Demo
 
-**Testes Unitários:**
-- Password hashing e verificação
-- Validações de email
+```bash
+# 1. Subir ambiente
+docker-compose up
 
-**Testes de Integração:**
-- Fluxo completo de login
-- Lockout funcionando
-- Rate limiting
+# 2. Login
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"Admin@123"}' \
+  -c cookies.txt
 
-**Testes de Segurança:**
-- Brute force bloqueado
-- Timing attacks mitigados
-- Cookie flags corretos
+# 3. Acessar recurso protegido
+curl http://localhost:5000/api/auth/me \
+  -b cookies.txt
+
+# 4. Logout
+curl -X POST http://localhost:5000/api/auth/logout \
+  -b cookies.txt
+```
 
 #### Riscos
 
-- **Médio:** Configuração incorreta de rate limiting pode bloquear usuários legítimos
+- **Médio:** Configuração de Docker pode ter problemas em diferentes ambientes
 - **Alto:** Vulnerabilidades de segurança se implementação incorreta
 
 ---
 
-### PBI-005: Implementação do Endpoint /authorize (OAuth 2.0)
+### SLICE-002: OAuth 2.0 Authorization Code Flow Completo
 
 **Prioridade:** Alta  
-**Story Points:** 8  
-**Dependências:** PBI-004
+**Story Points:** 21  
+**Dependências:** SLICE-001
+
+#### Valor de Negócio
+
+Sistemas clientes podem integrar-se ao SSO usando o padrão OAuth 2.0, permitindo que usuários façam login uma vez e acessem múltiplas aplicações sem re-autenticar.
 
 #### Descrição
 
-Implementar o endpoint /authorize do Authorization Code Flow, incluindo validações de client, redirect_uri, scopes e geração de authorization code.
+Implementar o fluxo completo OAuth 2.0 Authorization Code Flow, incluindo endpoints /authorize e /token, geração de JWT, e toda infraestrutura necessária para um client web se autenticar.
 
-#### Análise Técnica
+#### Escopo Técnico
 
-**Fluxo do Endpoint:**
+**Banco de Dados:**
+- Tabela Clients (Id, Name, ClientId, ClientSecret, RedirectUris, IsActive)
+- Tabela Scopes (Id, Name, Description)
+- Tabela ClientScopes (ClientId, ScopeId)
+- Tabela AuthorizationCodes (Code, UserId, ClientId, RedirectUri, ExpiresAt, IsUsed)
+- Tabela RefreshTokens (Id, Token, UserId, ClientId, ExpiresAt, IsRevoked)
+- Migrations e seeds (client padrão, scopes: openid, profile, email)
 
-1. Validar parâmetros da requisição:
-   - client_id (existente e ativo)
-   - redirect_uri (whitelist do client)
-   - response_type=code
-   - scope (permitido para o client)
-   - state (CSRF protection)
+**Domain Layer:**
+- Entidade Client com validações (ValidateRedirectUri, AddScope)
+- Entidade AuthorizationCode (MarkAsUsed, IsExpired)
+- Entidade RefreshToken (Rotate, Revoke)
+- Entidade Scope
+- Interfaces de repositórios
 
-2. Verificar autenticação do usuário:
-   - Se não autenticado → redirecionar para /login
-   - Se autenticado → verificar consentimento
+**Application Layer:**
+- OAuthService (GenerateAuthorizationCode, ExchangeCodeForTokens)
+- TokenService (GenerateAccessToken, GenerateIdToken, GenerateRefreshToken)
+- DTOs (AuthorizeRequest, TokenRequest, TokenResponse)
+- Validações OAuth
 
-3. Verificar consentimento:
-   - Se já consentiu → gerar code
-   - Se não consentiu → exibir tela de consentimento
+**Infrastructure Layer:**
+- Repositories (Client, AuthorizationCode, RefreshToken, Scope)
+- JwtTokenGenerator (RS256 com chaves assimétricas)
+- KeyManagementService (geração e armazenamento de chaves)
 
-4. Gerar Authorization Code:
-   - Código único, curta duração (10 minutos)
-   - Vinculado a: user, client, redirect_uri, scopes
-   - Armazenado no banco (AuthorizationCodes)
+**API Layer:**
+- OAuthController:
+  - GET /oauth/authorize
+  - POST /oauth/token
+  - GET /.well-known/jwks.json
+  - GET /.well-known/openid-configuration
+- Validações de OAuth (client_id, redirect_uri, scopes)
+- Geração de authorization code (10 min expiração)
+- Troca de code por tokens
 
-5. Redirecionar com code:
-   - `{redirect_uri}?code={code}&state={state}`
+**Tokens:**
+- Access Token (JWT, 15 min, contém: sub, email, roles, permissions)
+- ID Token (JWT, 15 min, contém: sub, email, name, email_verified)
+- Refresh Token (opaco, 30 dias, armazenado no DB)
 
-**Validações de Segurança:**
-- Redirect URI exact match (sem wildcards)
-- State parameter obrigatório
-- Code com entropia suficiente (32+ bytes)
+**Segurança:**
+- Client authentication (client_secret)
+- Redirect URI exact match
+- State parameter (CSRF protection)
+- Code uso único
+- Tokens assinados com RS256
 
-#### Ferramentas e Tecnologias
-
-**Geração de Códigos:**
-- System.Security.Cryptography.RandomNumberGenerator
-- Base64Url encoding
-
-**Validações:**
-- FluentValidation
-- Custom middleware para OAuth validations
-
-#### Critérios de Aceitação
-
-- [ ] Endpoint GET /authorize implementado
-- [ ] Validação de client_id e ativação
-- [ ] Validação estrita de redirect_uri (exact match)
-- [ ] Validação de scopes permitidos
-- [ ] Redirecionamento para login se não autenticado
-- [ ] Authorization code gerado e armazenado
-- [ ] Code com expiração de 10 minutos
-- [ ] Redirecionamento com code e state
-- [ ] Erros retornados conforme RFC 6749
-- [ ] Logs de eventos /authorize
-
-#### Testes
-
-**Testes Unitários:**
-- Validações de parâmetros
-- Geração de códigos
-
-**Testes de Integração:**
-- Fluxo completo com usuário autenticado
-- Fluxo com redirecionamento para login
-- Validação de redirect_uri inválido
-- Client inativo bloqueado
-
-**Testes de Segurança:**
-- Code com entropia adequada
-- Expiração de codes
-- Redirect URI manipulation
-
-#### Riscos
-
-- **Alto:** Vulnerabilidades de open redirect se validação incorreta
-- **Médio:** Timing de expiração de codes pode gerar problemas em produção
-
----
-
-### PBI-006: Implementação do Endpoint /token (OAuth 2.0)
-
-**Prioridade:** Alta  
-**Story Points:** 13  
-**Dependências:** PBI-005
-
-#### Descrição
-
-Implementar o endpoint /token para troca de authorization code por tokens (Access Token, ID Token, Refresh Token), incluindo validações e geração de JWTs.
-
-#### Análise Técnica
-
-**Grant Types Suportados:**
-
-1. **authorization_code:**
-   - Valida code, client_id, client_secret, redirect_uri
-   - Marca code como usado (uso único)
-   - Gera Access Token, ID Token, Refresh Token
-
-2. **refresh_token (PBI futura):**
-   - Valida refresh token
-   - Rotaciona refresh token
-   - Gera novos Access Token e ID Token
-
-**Estrutura dos Tokens:**
-
-**Access Token (JWT):**
-```json
-{
-  "iss": "https://sso.example.com",
-  "sub": "user-guid",
-  "aud": "client-id",
-  "exp": 1234567890,
-  "iat": 1234567000,
-  "roles": ["admin", "user"],
-  "permissions": ["users.read", "users.write"]
-}
-```
-**OBS As permissões emitidas no token devem ser calculadas como:**
-
-```permissoes_finais = permissoes_do_usuario ∩ permissoes_do_client```
-
-Somente permissoes_finais entram na claim permissions.
-
-**ID Token (JWT - OpenID Connect):**
-```json
-{
-  "iss": "https://sso.example.com",
-  "sub": "user-guid",
-  "aud": "client-id",
-  "exp": 1234567890,
-  "iat": 1234567000,
-  "email": "user@example.com",
-  "name": "John Doe",
-  "email_verified": true
-}
-```
-
-**Refresh Token:**
-- String opaca (não JWT)
-- Armazenado no banco
-- Vinculado a user e client
-- Duração longa (30 dias)
-
-**Assinatura JWT:**
-- Algoritmo: RS256 ou ES256
-- Chaves assimétricas (privada para assinar, pública via JWKS)
-- Rotação de chaves suportada
-
-#### Ferramentas e Tecnologias
-
-**JWT:**
-- Microsoft.IdentityModel.Tokens
-- System.IdentityModel.Tokens.Jwt
-
-**Criptografia:**
-- RSA ou ECDSA (geração de chaves)
-- System.Security.Cryptography
-
-**Validação:**
-- Client authentication (Basic Auth ou client_secret no body)
+**Testes:**
+- Testes unitários (geração de tokens, validações)
+- Testes de integração (fluxo completo OAuth)
+- Testes de segurança (redirect URI manipulation, code reuse)
 
 #### Critérios de Aceitação
 
-- [ ] Endpoint POST /token implementado
-- [ ] Grant type authorization_code funcional
-- [ ] Validação de code (existência, expiração, uso único)
-- [ ] Validação de client_secret
-- [ ] Validação de redirect_uri match
-- [ ] Access Token JWT gerado com roles e permissions
-- [ ] ID Token JWT gerado com claims de identidade
-- [ ] Refresh Token gerado e armazenado
-- [ ] Tokens com durações corretas (Access: 15min, Refresh: 30d)
-- [ ] Authorization code marcado como usado
-- [ ] Erros conforme RFC 6749
-- [ ] Logs de emissão de tokens
+- [ ] Client pode ser registrado no banco
+- [ ] Endpoint /authorize valida client_id e redirect_uri
+- [ ] /authorize redireciona para login se não autenticado
+- [ ] /authorize gera authorization code válido
+- [ ] /authorize redireciona com code e state
+- [ ] Endpoint /token valida code, client_secret, redirect_uri
+- [ ] /token retorna access_token, id_token, refresh_token
+- [ ] Access Token é JWT válido com claims corretas
+- [ ] ID Token é JWT válido com claims de identidade
+- [ ] Refresh Token pode renovar access_token
+- [ ] Authorization code só pode ser usado uma vez
+- [ ] Code expira em 10 minutos
+- [ ] JWKS endpoint publica chaves públicas
+- [ ] Discovery endpoint retorna configuração OpenID
+- [ ] Testes de integração cobrem fluxo completo
 
-#### Testes
+#### Demo
 
-**Testes Unitários:**
-- Geração e assinatura de JWTs
-- Validações de grant type
-- Construção de claims
+```bash
+# 1. Registrar client (via seed ou API futura)
+# Client: web-app
+# Secret: secret123
+# Redirect: http://localhost:3000/callback
 
-**Testes de Integração:**
-- Fluxo completo authorization_code
-- Code reutilizado retorna erro
-- Code expirado retorna erro
-- Client_secret inválido retorna erro
-- Redirect_uri mismatch retorna erro
+# 2. Iniciar fluxo OAuth (browser)
+http://localhost:5000/oauth/authorize?
+  client_id=web-app
+  &redirect_uri=http://localhost:3000/callback
+  &response_type=code
+  &scope=openid profile email
+  &state=xyz123
 
-**Testes de Segurança:**
-- Validação de assinatura JWT
-- Tokens não aceitam algoritmo "none"
-- Client authentication necessária
+# 3. Usuário faz login (se não autenticado)
+# 4. Redirect de volta com code
+http://localhost:3000/callback?code=ABC123&state=xyz123
+
+# 5. Client troca code por tokens
+curl -X POST http://localhost:5000/oauth/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grant_type": "authorization_code",
+    "code": "ABC123",
+    "client_id": "web-app",
+    "client_secret": "secret123",
+    "redirect_uri": "http://localhost:3000/callback"
+  }'
+
+# Resposta:
+{
+  "access_token": "eyJhbGc...",
+  "id_token": "eyJhbGc...",
+  "refresh_token": "opaque_token",
+  "token_type": "Bearer",
+  "expires_in": 900
+}
+
+# 6. Validar JWT
+curl http://localhost:5000/.well-known/jwks.json
+
+# 7. Usar access_token
+curl http://localhost:5000/api/protected \
+  -H "Authorization: Bearer eyJhbGc..."
+
+# 8. Renovar com refresh_token
+curl -X POST http://localhost:5000/oauth/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grant_type": "refresh_token",
+    "refresh_token": "opaque_token",
+    "client_id": "web-app",
+    "client_secret": "secret123"
+  }'
+```
 
 #### Riscos
 
 - **Alto:** Implementação incorreta de JWT pode gerar vulnerabilidades críticas
-- **Médio:** Gerenciamento de chaves privadas requer cuidado especial
-- **Médio:** Performance de geração de tokens pode ser gargalo
+- **Alto:** Gerenciamento de chaves privadas requer cuidado especial
+- **Médio:** Complexidade alta - muitos componentes interconectados
 
 ---
 
-### PBI-007: Publicação de JWKS (JSON Web Key Set)
+### SLICE-003: PKCE e Suporte para Apps Mobile/SPA
 
 **Prioridade:** Alta  
-**Story Points:** 3  
-**Dependências:** PBI-006
+**Story Points:** 8  
+**Dependências:** SLICE-002
+
+#### Valor de Negócio
+
+Apps mobile nativos (iOS/Android) e SPAs (React/Vue/Angular) podem se autenticar de forma segura sem precisar armazenar client_secret, usando PKCE.
 
 #### Descrição
 
-Implementar o endpoint /.well-known/jwks.json para publicação das chaves públicas utilizadas na assinatura dos JWTs.
+Adicionar suporte obrigatório a PKCE para proteção contra interceptação de authorization code, essencial para aplicações públicas.
 
-#### Análise Técnica
+#### Escopo Técnico
 
-**Funcionalidade:**
+**Banco de Dados:**
+- Adicionar colunas em AuthorizationCodes: CodeChallenge, CodeChallengeMethod
 
-1. Expor chaves públicas em formato JWK (JSON Web Key)
-2. Incluir metadata: kid (key ID), alg (algoritmo), use (sig)
-3. Suportar rotação de chaves (múltiplas chaves ativas)
+**Domain/Application/Infrastructure:**
+- PkceValidator (valida code_challenge e code_verifier)
+- Atualizar OAuthService para suportar PKCE
+- SHA256 hashing para S256 method
 
-**Formato JWKS:**
-```json
-{
-  "keys": [
-    {
-      "kty": "RSA",
-      "use": "sig",
-      "kid": "key-2024-01",
-      "alg": "RS256",
-      "n": "...",
-      "e": "AQAB"
-    }
-  ]
-}
+**API Layer:**
+- Atualizar /authorize para aceitar code_challenge
+- Atualizar /token para validar code_verifier
+- PKCE obrigatório para public clients
+
+**Configuração:**
+- ClientType (confidential vs public)
+- Public clients: PKCE obrigatório, sem client_secret
+
+**Documentação:**
+- Guias para mobile (iOS/Android)
+- Guias para SPAs
+- Exemplos de código
+
+#### Critérios de Aceitação
+
+- [ ] Client configurável como public ou confidential
+- [ ] /authorize aceita code_challenge e code_challenge_method
+- [ ] /token valida code_verifier
+- [ ] Métodos S256 e plain funcionam
+- [ ] PKCE obrigatório para public clients
+- [ ] Documentação mobile completa
+- [ ] Exemplos funcionais
+
+#### Demo
+
+```bash
+# App gera code_verifier e code_challenge
+code_verifier="dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+code_challenge=$(echo -n $code_verifier | sha256sum | xxd -r -p | base64 | tr -d '=' | tr '/+' '_-')
+
+# Fluxo OAuth com PKCE
+http://localhost:5000/oauth/authorize?
+  client_id=mobile-app
+  &redirect_uri=myapp://callback
+  &response_type=code
+  &code_challenge=$code_challenge
+  &code_challenge_method=S256
+
+# Troca code por tokens (SEM client_secret)
+curl -X POST http://localhost:5000/oauth/token \
+  -d '{
+    "grant_type": "authorization_code",
+    "code": "ABC123",
+    "client_id": "mobile-app",
+    "redirect_uri": "myapp://callback",
+    "code_verifier": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+  }'
 ```
 
-**Rotação de Chaves:**
-- Novas chaves adicionadas antes da antiga expirar
-- Múltiplas chaves ativas durante período de transição
-- Chaves antigas removidas após todos os tokens assinados expirarem
-
-#### Ferramentas e Tecnologias
-
-**Bibliotecas:**
-- Microsoft.IdentityModel.Tokens (JWK generation)
-- System.Security.Cryptography
-
-**Cache:**
-- In-memory cache para chaves públicas
-- Refresh automático
-
-#### Critérios de Aceitação
-
-- [ ] Endpoint GET /.well-known/jwks.json implementado
-- [ ] Chaves públicas no formato JWK correto
-- [ ] Metadata completo (kid, alg, use)
-- [ ] Cache de chaves implementado
-- [ ] CORS habilitado para acesso público
-- [ ] Documentação de rotação de chaves
-
-#### Testes
-
-**Testes de Integração:**
-- JWKS retornando chaves válidas
-- Formato JSON correto
-- Validação de JWT usando JWKS
-
-**Testes de Compatibilidade:**
-- Validação com bibliotecas JWT de diferentes linguagens
-
 #### Riscos
 
-- **Baixo:** Implementação padrão e bem documentada
-
----
-
-### PBI-008: Implementação de PKCE (Proof Key for Code Exchange)
-
-**Prioridade:** Alta  
-**Story Points:** 5  
-**Dependências:** PBI-006
-
-#### Descrição
-
-Adicionar suporte obrigatório a PKCE para proteção contra ataques de interceptação de authorization code, especialmente importante para aplicações públicas.
-
-#### Análise Técnica
-
-**PKCE Flow:**
-
-1. **Client gera code_verifier:**
-   - String aleatória (43-128 caracteres)
-   - Base64url encoded
-
-2. **Client gera code_challenge:**
-   - Métodos: plain ou S256 (SHA256)
-   - `code_challenge = BASE64URL(SHA256(code_verifier))`
-
-3. **Request /authorize:**
-   - Adiciona: `code_challenge`, `code_challenge_method`
-   - SSO armazena com authorization code
-
-4. **Request /token:**
-   - Adiciona: `code_verifier`
-   - SSO valida: `code_challenge == SHA256(code_verifier)`
-
-**Implementação no SSO:**
-- Armazenar code_challenge e method no AuthorizationCode
-- Validar code_verifier no endpoint /token
-- Tornar PKCE obrigatório (não opcional)
-
-#### Ferramentas e Tecnologias
-
-**Hashing:**
-- System.Security.Cryptography.SHA256
-- Base64Url encoding
-
-**Validação:**
-- Custom PKCE validator
-
-#### Critérios de Aceitação
-
-- [ ] PKCE suportado no /authorize (armazena code_challenge)
-- [ ] PKCE validado no /token
-- [ ] Métodos S256 e plain suportados
-- [ ] PKCE obrigatório para todos os clients
-- [ ] Erro retornado se code_verifier inválido
-- [ ] Documentação de PKCE para clients
-- [ ] Exemplos de implementação de PKCE
-
-#### Testes
-
-**Testes Unitários:**
-- Geração de code_challenge
-- Validação de code_verifier
-
-**Testes de Integração:**
-- Fluxo completo com PKCE S256
-- Fluxo completo com PKCE plain
-- Code_verifier incorreto retorna erro
-- Ausência de PKCE retorna erro
-
-**Testes de Segurança:**
-- Proteção contra code interception
-
-#### Riscos
-
-- **Médio:** Clients existentes precisarão adaptar implementação
+- **Médio:** Clients existentes precisarão adaptar
 - **Baixo:** Padrão bem documentado (RFC 7636)
 
 ---
 
-### PBI-009: Implementação de ID Token (OpenID Connect)
-
-**Prioridade:** Alta  
-**Story Points:** 5  
-**Dependências:** PBI-006
-
-#### Descrição
-
-Implementar a geração de ID Token conforme especificação OpenID Connect, contendo claims de identidade do usuário.
-
-#### Análise Técnica
-
-**Claims do ID Token:**
-
-**Obrigatórias:**
-- iss (issuer): URL do SSO
-- sub (subject): User ID
-- aud (audience): Client ID
-- exp (expiration): Timestamp
-- iat (issued at): Timestamp
-
-**Padrão OpenID:**
-- email
-- email_verified
-- name
-- given_name (opcional)
-- family_name (opcional)
-- picture (opcional)
-
-**Claims Adicionais (baseadas em scopes):**
-- Scope "profile": name, given_name, family_name, picture
-- Scope "email": email, email_verified
-
-**Assinatura:**
-- Mesmo par de chaves do Access Token
-- Algoritmo RS256 ou ES256
-
-#### Ferramentas e Tecnologias
-
-**JWT:**
-- System.IdentityModel.Tokens.Jwt
-- Claims mapping baseado em scopes
-
-#### Critérios de Aceitação
-
-- [ ] ID Token gerado no endpoint /token
-- [ ] Claims obrigatórias presentes
-- [ ] Claims baseadas em scopes solicitados
-- [ ] Assinatura válida (mesmas chaves do Access Token)
-- [ ] Duração apropriada (mesma do Access Token)
-- [ ] Nonce suportado (se enviado no /authorize)
-- [ ] at_hash incluído (hash do Access Token)
-
-#### Testes
-
-**Testes Unitários:**
-- Geração de ID Token
-- Claims mapping
-
-**Testes de Integração:**
-- ID Token retornado com authorization_code grant
-- Claims corretas baseadas em scopes
-- Validação de assinatura
-
-**Testes de Conformidade:**
-- Validação com OpenID Connect Validator
-
-#### Riscos
-
-- **Baixo:** Especificação clara e bem documentada
-
----
-
-### PBI-010: Endpoint /userinfo (OpenID Connect)
-
-**Prioridade:** Média  
-**Story Points:** 3  
-**Dependências:** PBI-009
-
-#### Descrição
-
-Implementar o endpoint /userinfo para retornar informações do usuário autenticado, protegido por Access Token.
-
-#### Análise Técnica
-
-**Endpoint:**
-```
-GET /userinfo
-Authorization: Bearer {access_token}
-```
-
-**Response:**
-```json
-{
-  "sub": "user-guid",
-  "email": "user@example.com",
-  "email_verified": true,
-  "name": "John Doe",
-  "given_name": "John",
-  "family_name": "Doe"
-}
-```
-
-**Funcionalidade:**
-1. Validar Access Token (assinatura, expiração, aud, iss)
-2. Extrair sub (user ID) do token
-3. Buscar informações do usuário no banco
-4. Filtrar claims baseadas em scopes do token
-5. Retornar JSON com claims
-
-**Segurança:**
-- Validação completa do JWT
-- Rate limiting
-- Sem informações sensíveis (senha, tokens)
-
-#### Ferramentas e Tecnologias
-
-**JWT Validation:**
-- Microsoft.AspNetCore.Authentication.JwtBearer
-- Configuração de validação automática
-
-**Rate Limiting:**
-- AspNetCoreRateLimit (100 req/min por usuário)
-
-#### Critérios de Aceitação
-
-- [ ] Endpoint GET /userinfo implementado
-- [ ] Autenticação via Bearer token obrigatória
-- [ ] Validação completa de JWT (assinatura, exp, iss, aud)
-- [ ] Claims filtradas por scopes do token
-- [ ] Erro 401 se token inválido ou ausente
-- [ ] Erro 403 se token válido mas sem scopes necessários
-- [ ] Rate limiting ativo
-- [ ] CORS configurado para clients autorizados
-
-#### Testes
-
-**Testes de Integração:**
-- Request com token válido retorna claims
-- Token inválido retorna 401
-- Token sem scope openid retorna erro
-- Claims filtradas corretamente
-
-**Testes de Segurança:**
-- Token expirado rejeitado
-- Token adulterado rejeitado
-- Assinatura inválida rejeitada
-
-#### Riscos
-
-- **Baixo:** Endpoint padrão do OpenID Connect
-
----
-
-### PBI-011: Discovery Endpoint (/.well-known/openid-configuration)
-
-**Prioridade:** Média  
-**Story Points:** 2  
-**Dependências:** PBI-010
-
-#### Descrição
-
-Implementar o endpoint de descoberta OpenID Connect para permitir que clients descubram automaticamente a configuração do SSO.
-
-#### Análise Técnica
-
-**Endpoint:**
-```
-GET /.well-known/openid-configuration
-```
-
-**Response:**
-```json
-{
-  "issuer": "https://sso.example.com",
-  "authorization_endpoint": "https://sso.example.com/authorize",
-  "token_endpoint": "https://sso.example.com/token",
-  "userinfo_endpoint": "https://sso.example.com/userinfo",
-  "jwks_uri": "https://sso.example.com/.well-known/jwks.json",
-  "response_types_supported": ["code"],
-  "subject_types_supported": ["public"],
-  "id_token_signing_alg_values_supported": ["RS256"],
-  "scopes_supported": ["openid", "profile", "email"],
-  "token_endpoint_auth_methods_supported": ["client_secret_basic", "client_secret_post"],
-  "claims_supported": ["sub", "email", "email_verified", "name"]
-}
-```
-
-**Configuração:**
-- Valores dinâmicos baseados na configuração do SSO
-- Cache para performance
-- CORS habilitado
-
-#### Ferramentas e Tecnologias
-
-**Configuração:**
-- ASP.NET Core Configuration
-- IOptions pattern
-
-#### Critérios de Aceitação
-
-- [ ] Endpoint /.well-known/openid-configuration implementado
-- [ ] Todos os campos obrigatórios presentes
-- [ ] URLs corretas e acessíveis
-- [ ] Cache configurado
-- [ ] CORS habilitado
-- [ ] Documentação de uso
-
-#### Testes
-
-**Testes de Integração:**
-- Endpoint retorna JSON válido
-- Todas as URLs funcionais
-- Conformidade com spec OpenID
-
-**Testes de Validação:**
-- Validação com ferramentas OpenID Connect
-
-#### Riscos
-
-- **Baixo:** Implementação simples e padronizada
-
----
-
-### PBI-012: Sistema de Roles (RBAC)
-
-**Prioridade:** Alta  
-**Story Points:** 5  
-**Dependências:** PBI-003
-
-#### Descrição
-
-Implementar o sistema de Roles (RBAC - Role-Based Access Control) permitindo criação, edição e atribuição de roles a usuários.
-
-#### Análise Técnica
-
-**Funcionalidades:**
-
-1. **Gerenciamento de Roles:**
-   - Criar role (nome, descrição)
-   - Editar role
-   - Listar roles
-   - Deletar role (se não estiver em uso)
-
-2. **Associação Permissions → Roles:**
-   - Adicionar permission a role
-   - Remover permission de role
-   - Listar permissions de uma role
-
-3. **Atribuição Roles → Users:**
-   - Atribuir role a usuário
-   - Remover role de usuário
-   - Listar roles de um usuário
-
-**Regras de Negócio:**
-- Role pode ter múltiplas permissions
-- Usuário pode ter múltiplas roles
-- Permissions são herdadas das roles
-- Roles não podem ser deletadas se em uso
-
-**API Endpoints:**
-```
-POST   /api/roles
-GET    /api/roles
-GET    /api/roles/{id}
-PUT    /api/roles/{id}
-DELETE /api/roles/{id}
-POST   /api/roles/{id}/permissions
-DELETE /api/roles/{id}/permissions/{permissionId}
-```
-
-#### Ferramentas e Tecnologias
-
-**Validação:**
-- FluentValidation
-
-**Autorização:**
-- Custom Authorization Policies
-
-#### Critérios de Aceitação
-
-- [ ] CRUD de Roles implementado
-- [ ] Associação Permission-Role funcional
-- [ ] Atribuição User-Role funcional
-- [ ] Validações de negócio (role em uso não pode ser deletada)
-- [ ] Endpoints de API criados
-- [ ] Documentação de API (Swagger)
-- [ ] Testes unitários (>80% cobertura)
-
-#### Testes
-
-**Testes Unitários:**
-- Validações de domínio
-- Regras de negócio
-
-**Testes de Integração:**
-- CRUD completo de roles
-- Associações funcionando
-- Restrições de deleção
-
-#### Riscos
-
-- **Baixo:** Padrão bem estabelecido
-- Complexidade em hierarquias de roles (não está no escopo)
-
----
-
-### PBI-013: Sistema de Permissions
-
-**Prioridade:** Alta  
-**Story Points:** 5  
-**Dependências:** PBI-012
-
-#### Descrição
-
-Implementar o sistema de Permissions granulares, permitindo controle fino de acesso e atribuição direta a usuários além das roles.
-
-#### Análise Técnica
-
-**Funcionalidades:**
-
-1. **Gerenciamento de Permissions:**
-   - Criar permission (nome, descrição)
-   - Editar permission
-   - Listar permissions
-   - Deletar permission (se não estiver em uso)
-
-2. **Atribuição Direta a Usuários:**
-   - Atribuir permission a usuário (além das roles)
-   - Remover permission de usuário
-   - Listar permissions diretas de um usuário
-
-3. **Cálculo de Permissions Efetivas:**
-   - União de permissions das roles
-   - União de permissions diretas
-   - Sem duplicatas
-
-4. **Além do gerenciamento global de permissions, o sistema deve permitir:**
-   - Associar permissions a clients
-   - Listar permissions habilitadas por client
-
-**Convenção de Nomenclatura:**
-```
-{recurso}.{ação}
-
-Exemplos:
-- users.read
-- users.create
-- users.update
-- users.delete
-- orders.read
-- orders.approve
-- reports.generate
-```
-
-**Inclusão no Access Token:**
-- Permissions consolidadas (roles + diretas)
-- Claim "permissions" como array
-
-**API Endpoints:**
-```
-POST   /api/permissions
-GET    /api/permissions
-GET    /api/permissions/{id}
-PUT    /api/permissions/{id}
-DELETE /api/permissions/{id}
-POST   /api/users/{userId}/permissions
-DELETE /api/users/{userId}/permissions/{permissionId}
-GET    /api/users/{userId}/effective-permissions
-POST /api/clients/{clientId}/permissions
-DELETE /api/clients/{clientId}/permissions/{permissionId}
-GET /api/clients/{clientId}/permissions
-```
-
-#### Ferramentas e Tecnologias
-
-**Validação:**
-- FluentValidation (validar formato nome)
-
-**Cache:**
-- In-memory cache para permissions efetivas
-
-#### Critérios de Aceitação
-
-- [ ] CRUD de Permissions implementado
-- [ ] Atribuição direta User-Permission funcional
-- [ ] Cálculo de permissions efetivas implementado
-- [ ] Permissions incluídas no Access Token
-- [ ] Convenção de nomenclatura validada
-- [ ] Cache de permissions efetivas
-- [ ] API endpoints criados
-- [ ] Documentação Swagger
-
-#### Testes
-
-**Testes Unitários:**
-- Cálculo de permissions efetivas
-- Validações de formato
-
-**Testes de Integração:**
-- CRUD completo
-- Permissions no Access Token corretas
-- Cache funcionando
-
-#### Riscos
-
-- **Médio:** Performance do cálculo de permissions pode ser gargalo
-- Cache invalidation precisa ser bem implementado
-
----
-
-### PBI-014: Sistema de Consentimento de Identidade
-
-**Prioridade:** Média  
-**Story Points:** 5  
-**Dependências:** PBI-005
-
-#### Descrição
-
-Implementar o sistema de consentimento do usuário para compartilhamento de identidade com sistemas clientes, conforme padrão OpenID Connect.
-
-#### Análise Técnica
-
-**Fluxo de Consentimento:**
-
-1. Usuário autenticado no /authorize
-2. SSO verifica se já existe consentimento (UserConsents)
-3. Se não existe:
-   - Exibir tela de consentimento
-   - Usuário aprova ou rejeita
-   - Registrar consentimento no banco
-4. Se existe:
-   - Prosseguir com geração do authorization code
-
-**Tela de Consentimento:**
-
-Informações exibidas:
-- Nome do sistema cliente
-- Scopes solicitados (traduzidos para linguagem amigável)
-- Informações que serão compartilhadas
-- Botões: "Permitir" e "Cancelar"
-
-Exemplo de tradução de scopes:
-- `openid` → "Autenticação"
-- `profile` → "Nome e informações básicas"
-- `email` → "Endereço de e-mail"
-
-**Persistência:**
-- Consentimento salvo na tabela UserConsents
-- Válido indefinidamente (ou até revogação manual)
-- Vinculado a User e Client
-
-**Revogação (implementação futura):**
-- Usuário pode revogar consentimento
-- Sistemas clientes devem solicitar novo consentimento
-
-#### Ferramentas e Tecnologias
-
-**UI:**
-- Razor Pages ou MVC Views
-- Tailwind CSS ou Bootstrap
-
-**Validação:**
-- CSRF protection (anti-forgery tokens)
-
-#### Critérios de Aceitação
-
-- [ ] Tela de consentimento implementada
-- [ ] Fluxo integrado ao /authorize
-- [ ] Consentimento salvo no banco (UserConsents)
-- [ ] Consentimento verificado antes de gerar code
-- [ ] Scopes traduzidos para linguagem amigável
-- [ ] Botões "Permitir" e "Cancelar" funcionais
-- [ ] Cancelamento retorna erro ao client
-- [ ] CSRF protection implementado
-- [ ] Design responsivo
-
-#### Testes
-
-**Testes de Integração:**
-- Primeiro acesso exibe consentimento
-- Acesso subsequente não exige novo consentimento
-- Cancelamento retorna erro correto
-- Consentimento salvo no banco
-
-**Testes de UX:**
-- Tela de consentimento clara e compreensível
-- Responsividade em mobile
-
-#### Riscos
-
-- **Baixo:** Funcionalidade padrão do OpenID Connect
-- UX ruim pode confundir usuários
-
----
-
-### PBI-015: UI de Login e Autenticação
-
-**Prioridade:** Alta  
-**Story Points:** 8  
-**Dependências:** PBI-004, PBI-014
-
-#### Descrição
-
-Desenvolver a interface de usuário completa para login, incluindo tela de login, recuperação de senha e integração com o fluxo de autenticação.
-
-#### Análise Técnica
-
-**Telas:**
-
-1. **Login:**
-   - Campos: Email, Senha
-   - Checkbox: "Lembrar-me"
-   - Link: "Esqueci minha senha"
-   - Botão: "Entrar"
-   - Mensagens de erro inline
-   - Indicador de loading
-
-2. **Recuperação de Senha:**
-   - Campo: Email
-   - Botão: "Enviar link de recuperação"
-   - Mensagem de confirmação (genérica)
-
-3. **Redefinição de Senha:**
-   - Campos: Nova senha, Confirmar senha
-   - Validação de força de senha
-   - Botão: "Redefinir senha"
-
-4. **Erro de Autenticação:**
-   - Mensagem genérica de erro
-   - Link para tentar novamente
-   - Link para recuperação de senha
-
-**Funcionalidades:**
-
-- Validação client-side (HTML5 + JavaScript)
-- Validação server-side
-- Rate limiting visual (mostrar bloqueio temporário)
-- Redirect após login para URL original (/authorize)
-- Acessibilidade (WCAG 2.1 AA)
-
-**Design:**
-- Responsivo (mobile-first)
-- Marca do SSO (logo, cores)
-- UX limpa e profissional
-
-#### Ferramentas e Tecnologias
-
-**Frontend:**
-- Razor Pages ou Blazor Server
-- Tailwind CSS ou Bootstrap 5
-- JavaScript vanilla ou Alpine.js (leve)
-
-**Validação:**
-- FluentValidation (server-side)
-- HTML5 validation (client-side)
-
-**Email:**
-- MailKit ou SendGrid (recuperação de senha)
-
-#### Critérios de Aceitação
-
-- [ ] Tela de login funcional e integrada
-- [ ] Validações client-side e server-side
-- [ ] Mensagens de erro claras (genéricas)
-- [ ] Recuperação de senha funcional
-- [ ] Email de recuperação enviado
-- [ ] Redefinição de senha com token seguro
-- [ ] Design responsivo (mobile, tablet, desktop)
-- [ ] Acessibilidade WCAG 2.1 AA
-- [ ] Rate limiting visível para usuário
-- [ ] Loading indicators
-- [ ] Redirect para /authorize após login
-
-#### Testes
-
-**Testes de Integração:**
-- Fluxo completo de login
-- Recuperação de senha end-to-end
-- Validações funcionando
-
-**Testes de UX:**
-- Usabilidade em diferentes dispositivos
-- Mensagens de erro compreensíveis
-
-**Testes de Acessibilidade:**
-- Validação com ferramentas (axe, WAVE)
-- Navegação por teclado
-
-#### Riscos
-
-- **Médio:** UX ruim pode frustrar usuários
-- **Baixo:** Envio de emails pode ter problemas em produção
-
----
-
-### PBI-016: UI de Cadastro de Usuários (Self-Service)
-
-**Prioridade:** Média  
-**Story Points:** 5  
-**Dependências:** PBI-015
-
-#### Descrição
-
-Desenvolver a interface para cadastro de novos usuários (self-service), permitindo que usuários criem suas próprias contas no SSO.
-
-#### Análise Técnica
-
-**Tela de Cadastro:**
-
-Campos:
-- Nome completo
-- Email
-- Senha
-- Confirmar senha
-- Checkbox: "Aceito os termos de uso"
-
-Validações:
-- Email único no sistema
-- Senha forte (mín. 8 caracteres, maiúscula, minúscula, número, símbolo)
-- Senhas devem coincidir
-- Termos de uso obrigatórios
-
-**Fluxo:**
-1. Usuário preenche formulário
-2. Validações client-side
-3. Submit para servidor
-4. Validações server-side
-5. Criar usuário com IsActive=false
-6. Enviar email de ativação
-7. Exibir mensagem de confirmação
-8. Usuário clica no link de ativação
-9. Conta ativada (IsActive=true)
-
-**Configuração:**
-- Cadastro pode ser habilitado/desabilitado via configuração
-- Se desabilitado, apenas admins podem criar usuários
-
-**Segurança:**
-- CAPTCHA (opcional, configurável)
-- Rate limiting (prevenir cadastros em massa)
-- Validação de email real (verificação de MX records)
-
-#### Ferramentas e Tecnologias
-
-**Frontend:**
-- Razor Pages ou Blazor
-- Validação de senha em tempo real (indicador de força)
-
-**Backend:**
-- Token de ativação (GUID ou JWT de curta duração)
-- Email service
-
-**CAPTCHA (opcional):**
-- Google reCAPTCHA v3
-
-#### Critérios de Aceitação
-
-- [ ] Tela de cadastro funcional
-- [ ] Validações client-side e server-side
-- [ ] Email de ativação enviado
-- [ ] Link de ativação funcional (token seguro)
-- [ ] Indicador de força de senha
-- [ ] Validação de email único
-- [ ] Rate limiting implementado
-- [ ] Configuração de habilitar/desabilitar cadastro
-- [ ] CAPTCHA implementado (opcional)
-- [ ] Design responsivo
-- [ ] Mensagens de erro claras
-
-#### Testes
-
-**Testes de Integração:**
-- Fluxo completo de cadastro e ativação
-- Email duplicado bloqueado
-- Token de ativação válido e expiração
-
-**Testes de Segurança:**
-- Rate limiting bloqueando cadastros em massa
-- Validação de força de senha
-
-#### Riscos
-
-- **Médio:** Spam e contas fake se sem CAPTCHA
-- **Baixo:** Emails podem cair em spam
-
----
-
-### PBI-017: UI Administrativa (Admin Dashboard)
+### SLICE-004: Sistema de Roles e Permissions com API
 
 **Prioridade:** Alta  
 **Story Points:** 13  
-**Dependências:** PBI-012, PBI-013
+**Dependências:** SLICE-002
+
+#### Valor de Negócio
+
+Administradores podem gerenciar roles e permissions via API REST. Access tokens incluem roles e permissions do usuário.
 
 #### Descrição
 
-Desenvolver a interface administrativa completa para gerenciamento de usuários, roles, permissions, clients e auditoria.
+Implementar RBAC completo com API para gerenciamento. Tokens passam a incluir roles e permissions calculadas.
 
-#### Análise Técnica
+#### Escopo Técnico
 
-**Módulos da UI Admin:**
+**Banco de Dados:**
+- Tabelas: Roles, Permissions, RolePermissions, UserRoles, UserPermissions, ClientPermissions
 
-1. **Dashboard:**
-   - Estatísticas: Total de usuários, logins hoje, tokens emitidos
-   - Gráficos: Autenticações por dia (última semana)
-   - Alertas: Tentativas de login falhas, contas bloqueadas
+**Domain/Application:**
+- Entidades Role, Permission
+- RoleService, PermissionService, UserRoleService
+- PermissionCalculator (roles + diretas ∩ client)
 
-2. **Gestão de Usuários:**
-   - Listar usuários (paginação, busca, filtros)
-   - Criar usuário
-   - Editar usuário (nome, email, ativar/desativar)
-   - Atribuir/remover roles
-   - Atribuir/remover permissions diretas
-   - Resetar senha (enviar email)
-   - Visualizar permissions efetivas
+**API Layer:**
+- RolesController (CRUD + associar permissions)
+- PermissionsController (CRUD)
+- UsersController (atribuir roles/permissions, ver efetivas)
+- ClientsController (gerenciar permissions do client)
 
-3. **Gestão de Roles:**
-   - Listar roles
-   - Criar role
-   - Editar role
-   - Associar/remover permissions
-   - Deletar role (se não em uso)
-   - Visualizar usuários com a role
+**Tokens:**
+- Access Token inclui: "roles": [...], "permissions": [...]
+- Permissions calculadas: (user_roles + user_direct) ∩ client_permissions
 
-4. **Gestão de Permissions:**
-   - Listar permissions
-   - Criar permission
-   - Editar permission
-   - Deletar permission (se não em uso)
-   - Visualizar onde está sendo usada (roles/usuários)
-
-5. **Gestão de Clients:**
-   - Listar clients
-   - Criar client
-   - Editar client (nome, redirect_uris, scopes)
-   - Gerar novo client_secret
-   - Ativar/desativar client
-   - Visualizar estatísticas de uso
-
-6. **Auditoria:**
-   - Listar logs de auditoria
-   - Filtros: Data, usuário, evento, client
-   - Exportar logs (CSV/JSON)
-
-7. **Permissions do Client**
-   - Seleção de permissões habilitadas
-   - Visualização de impacto (quais usuários usam)
-
-**Autenticação e Autorização:**
-- Admin UI protegida por autenticação
-- Apenas usuários com permission "admin.access" podem acessar
-- Diferentes níveis de acesso (view, edit) por módulo
-
-**Design:**
-- Layout profissional (sidebar, top nav)
-- Tabelas com paginação
-- Modais para criação/edição
-- Feedback visual (toasts, confirmações)
-- Responsivo
-
-#### Ferramentas e Tecnologias
-
-**Frontend:**
-- Blazor Server (opção 1, mais .NET)
-- React/Vue.js (opção 2, mais flexível)
-
-**UI Framework:**
-- MudBlazor (para Blazor)
-- Ant Design ou Material-UI (para React)
-
-**Gráficos:**
-- Chart.js ou Recharts
-
-**Tabelas:**
-- DataTables.js ou AG Grid
+**Autorização:**
+- Policy-based authorization
+- Apenas "admin.access" pode gerenciar
 
 #### Critérios de Aceitação
 
-- [ ] Todos os módulos implementados e funcionais
-- [ ] CRUD completo em cada módulo
-- [ ] Paginação, busca e filtros funcionando
-- [ ] Autenticação e autorização por permission
-- [ ] Gráficos e estatísticas exibidos
-- [ ] Exportação de logs funcionando
-- [ ] Design responsivo e profissional
-- [ ] Feedback visual (loading, sucesso, erro)
-- [ ] Confirmações antes de ações destrutivas
-- [ ] Validações client-side e server-side
+- [ ] CRUD de Roles via API
+- [ ] CRUD de Permissions via API
+- [ ] Associação Role-Permission
+- [ ] Atribuição User-Role
+- [ ] Atribuição User-Permission direta
+- [ ] Associação Client-Permission
+- [ ] Cálculo de permissions efetivas correto
+- [ ] Access Token inclui roles e permissions
+- [ ] Apenas admins acessam endpoints
+- [ ] Documentação Swagger completa
 
-#### Testes
+#### Demo
 
-**Testes de Integração:**
-- CRUD de cada entidade
-- Filtros e buscas
-- Autorização (usuário sem permission bloqueado)
+```bash
+# Criar role
+curl -X POST http://localhost:5000/api/roles \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -d '{"name":"editor","description":"Content Editor"}'
 
-**Testes de UX:**
-- Navegação intuitiva
-- Mensagens claras
+# Criar permission
+curl -X POST http://localhost:5000/api/permissions \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -d '{"name":"posts.create","description":"Create posts"}'
 
-#### Riscos
+# Associar permission à role
+curl -X POST http://localhost:5000/api/roles/editor/permissions \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -d '{"permissionId":"posts.create"}'
 
-- **Alto:** Complexidade alta (muitas telas)
-- **Médio:** Performance com muitos dados (paginação essencial)
-- Escopo pode aumentar (feature creep)
+# Atribuir role a usuário
+curl -X POST http://localhost:5000/api/users/user-123/roles \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -d '{"roleId":"editor"}'
 
----
-
-### PBI-018: Sistema de Auditoria e Logs
-
-**Prioridade:** Alta  
-**Story Points:** 8  
-**Dependências:** PBI-003
-
-#### Descrição
-
-Implementar sistema completo de auditoria para registrar eventos críticos de segurança e administração, garantindo rastreabilidade e conformidade.
-
-#### Análise Técnica
-
-**Eventos Auditáveis:**
-
-**Autenticação:**
-- LOGIN_SUCCESS
-- LOGIN_FAILED
-- LOGOUT
-- PASSWORD_RESET_REQUESTED
-- PASSWORD_RESET_COMPLETED
-- ACCOUNT_LOCKED
-
-**Autorização:**
-- CONSENT_GRANTED
-- CONSENT_REVOKED
-- TOKEN_ISSUED
-- REFRESH_TOKEN_USED
-- REFRESH_TOKEN_REVOKED
-
-**Administração:**
-- USER_CREATED
-- USER_UPDATED
-- USER_DELETED
-- USER_ACTIVATED
-- USER_DEACTIVATED
-- ROLE_CREATED
-- ROLE_UPDATED
-- ROLE_DELETED
-- PERMISSION_CREATED
-- PERMISSION_UPDATED
-- PERMISSION_DELETED
-- CLIENT_CREATED
-- CLIENT_UPDATED
-- CLIENT_DELETED
-
-**Estrutura do Log:**
-```csharp
+# Token contém:
 {
-  "Id": "guid",
-  "EventType": "LOGIN_SUCCESS",
-  "EntityType": "User",
-  "EntityId": "user-guid",
-  "UserId": "user-guid",
-  "ClientId": "client-id",
-  "Timestamp": "ISO 8601",
-  "IpAddress": "192.168.1.1",
-  "UserAgent": "Mozilla/5.0...",
-  "Data": {
-    // Dados adicionais em JSON
-  }
+  "sub": "user-123",
+  "roles": ["editor"],
+  "permissions": ["posts.create"]
 }
 ```
 
-**Implementação:**
+#### Riscos
 
-1. **Middleware de Auditoria:**
-   - Captura IP, User-Agent automaticamente
-   - Injeta contexto de auditoria
+- **Médio:** Performance do cálculo pode ser gargalo
+- **Médio:** Cache invalidation precisa ser bem implementado
 
-2. **Audit Service:**
-   - Método genérico: `LogEvent(eventType, entityType, entityId, data)`
-   - Processamento assíncrono (não bloquear fluxo principal)
+---
 
-3. **Storage:**
-   - Tabela AuditLogs no banco
-   - Append-only (imutável)
-   - Índices em: Timestamp, UserId, ClientId, EventType
+### SLICE-005: Sistema de Consentimento de Usuário
 
-4. **Retenção:**
-   - Logs mantidos por tempo configurável (ex: 1 ano)
-   - Processo de arquivamento/remoção automático
+**Prioridade:** Média  
+**Story Points:** 8  
+**Dependências:** SLICE-002
 
-#### Ferramentas e Tecnologias
+#### Valor de Negócio
 
-**Logging:**
-- Serilog (structured logging)
-- NLog (alternativa)
+Usuários visualizam e controlam quais informações compartilham com cada aplicação, aumentando transparência e conformidade LGPD/GDPR.
 
-**Processamento Assíncrono:**
-- Background services (IHostedService)
-- Queues (opcional: RabbitMQ, Azure Service Bus)
+#### Descrição
 
-**Análise:**
-- Elasticsearch + Kibana (opcional para grandes volumes)
+Implementar tela de consentimento que aparece no primeiro acesso, mostrando dados que serão compartilhados.
+
+#### Escopo Técnico
+
+**Banco de Dados:**
+- Tabela UserConsents (Id, UserId, ClientId, GrantedScopes, GrantedAt)
+
+**Application:**
+- ConsentService (CheckConsent, GrantConsent, RevokeConsent)
+
+**UI (Razor Pages):**
+- Página /consent
+- Exibe: nome do client, scopes traduzidos, informações compartilhadas
+- Botões: "Permitir" e "Cancelar"
+- Design responsivo (Tailwind CSS)
+- CSRF protection
+
+**Fluxo:**
+- /authorize verifica consentimento
+- Se não existe → /consent
+- Se existe → gera code
+- Cancelamento retorna erro
+
+**API:**
+- GET /api/users/me/consents (listar)
+- DELETE /api/users/me/consents/{clientId} (revogar)
 
 #### Critérios de Aceitação
 
-- [ ] Todos os eventos auditáveis registrados
-- [ ] Middleware de auditoria implementado
-- [ ] Audit service funcional
-- [ ] Logs armazenados na tabela AuditLogs
-- [ ] Processamento assíncrono (não bloqueia fluxo)
-- [ ] IP e User-Agent capturados automaticamente
-- [ ] Índices criados para performance
-- [ ] UI Admin exibindo logs (ver PBI-017)
-- [ ] Filtros e exportação funcionando
-- [ ] Retenção configurável
-- [ ] Dados sensíveis nunca logados (senhas, tokens completos)
+- [ ] Tela de consentimento responsiva
+- [ ] Scopes traduzidos
+- [ ] "Permitir" salva e prossegue
+- [ ] "Cancelar" retorna erro
+- [ ] /authorize verifica consentimento
+- [ ] Usuário pode listar consentimentos
+- [ ] Usuário pode revogar
+- [ ] CSRF protection
 
-#### Testes
+#### Demo
 
-**Testes de Integração:**
-- Eventos registrados corretamente
-- Processamento assíncrono funcional
-- Busca e filtros performáticos
+```bash
+# Primeiro acesso → Tela de consentimento
+# -----------------------------------
+# Blog App gostaria de acessar:
+# ✓ Sua identidade (login)
+# ✓ Seu nome e foto de perfil
+# ✓ Seu endereço de email
+#
+# [Cancelar] [Permitir]
+# -----------------------------------
 
-**Testes de Performance:**
-- Alto volume de logs não degrada sistema
+# Próximo acesso → Pula consentimento
+
+# Listar consentimentos
+curl http://localhost:5000/api/users/me/consents \
+  -H "Authorization: Bearer $TOKEN"
+
+# Revogar
+curl -X DELETE http://localhost:5000/api/users/me/consents/blog-app \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 #### Riscos
 
-- **Médio:** Alto volume de logs pode impactar performance do banco
+- **Baixo:** Funcionalidade padrão OIDC
+- **Médio:** UX ruim pode confundir usuários
+
+---
+
+### SLICE-006: UI de Login e Cadastro de Usuários
+
+**Prioridade:** Alta  
+**Story Points:** 13  
+**Dependências:** SLICE-001, SLICE-005
+
+#### Valor de Negócio
+
+Usuários podem fazer login e criar contas através de interface web moderna e responsiva.
+
+#### Descrição
+
+Desenvolver interface completa de login, cadastro, recuperação e redefinição de senha.
+
+#### Escopo Técnico
+
+**Banco de Dados:**
+- Adicionar em Users: EmailVerified, PasswordResetToken, PasswordResetExpires, ActivationToken, ActivationExpires
+
+**Application:**
+- UserRegistrationService
+- PasswordResetService
+- EmailService (SMTP)
+
+**UI (Razor Pages):**
+1. Login (/login)
+2. Cadastro (/register)
+3. Recuperação (/forgot-password)
+4. Redefinição (/reset-password?token=...)
+5. Ativação (/activate?token=...)
+
+**Design:**
+- Tailwind CSS
+- Responsivo (mobile-first)
+- Acessibilidade (WCAG 2.1 AA)
+- Indicador de força de senha
+
+**Segurança:**
+- CSRF protection
+- Rate limiting
+- Tokens com expiração (24h)
+
+**Integração OAuth:**
+- /login aceita ?returnUrl=/authorize?...
+
+#### Critérios de Aceitação
+
+- [ ] Todas as telas funcionais e responsivas
+- [ ] Validações client-side e server-side
+- [ ] Indicador de força de senha
+- [ ] Emails enviados
+- [ ] Tokens com expiração
+- [ ] Rate limiting
+- [ ] CSRF protection
+- [ ] Acessibilidade WCAG 2.1 AA
+- [ ] Integração com OAuth (?returnUrl)
+
+#### Demo
+
+```bash
+# 1. Cadastro
+http://localhost:5000/register
+Nome: João Silva
+Email: joao@example.com
+Senha: Senha@123
+
+# 2. Email de ativação enviado
+# 3. Clicar no link
+http://localhost:5000/activate?token=abc123
+
+# 4. Login
+http://localhost:5000/login
+Email: joao@example.com
+Senha: Senha@123
+
+# 5. Recuperação de senha
+http://localhost:5000/forgot-password
+Email: joao@example.com
+
+# 6. Email com link de reset
+http://localhost:5000/reset-password?token=xyz789
+Nova senha: NovaSenha@456
+```
+
+#### Riscos
+
+- **Médio:** Emails podem cair em spam
+- **Médio:** UX ruim pode frustrar usuários
+
+---
+
+### SLICE-007: UI Administrativa - Gestão de Usuários
+
+**Prioridade:** Alta  
+**Story Points:** 13  
+**Dependências:** SLICE-004, SLICE-006
+
+#### Valor de Negócio
+
+Administradores gerenciam usuários através de interface web intuitiva.
+
+#### Descrição
+
+Desenvolver painel administrativo para gestão completa de usuários.
+
+#### Escopo Técnico
+
+**Application:**
+- UserManagementService (CRUD, Search, Activate/Deactivate)
+
+**API:**
+- UsersController expandido (paginação, busca, filtros, CRUD, activate, deactivate, reset-password)
+
+**UI (Blazor Server ou Razor + HTMX):**
+1. Dashboard (/admin) - estatísticas
+2. Lista de Usuários (/admin/users) - tabela com paginação, busca, filtros
+3. Criar Usuário (modal)
+4. Editar Usuário - nome, email, roles, permissions, ver efetivas
+
+**Design:**
+- Layout com sidebar
+- Tabelas responsivas
+- Modais para confirmações
+- Toasts para feedback
+
+**Autorização:**
+- Apenas "admin.access"
+- Logs de ações
+
+#### Critérios de Aceitação
+
+- [ ] Dashboard com estatísticas
+- [ ] Lista com paginação
+- [ ] Busca funcional
+- [ ] Filtros funcionais
+- [ ] Criar usuário
+- [ ] Editar usuário
+- [ ] Desativar/ativar
+- [ ] Atribuir/remover roles
+- [ ] Atribuir/remover permissions
+- [ ] Ver permissions efetivas
+- [ ] Resetar senha
+- [ ] Soft delete
+- [ ] Apenas admins acessam
+- [ ] Ações logadas
+- [ ] Design responsivo
+
+#### Demo
+
+```bash
+# 1. Dashboard
+http://localhost:5000/admin
+→ Total: 150 usuários
+→ Ativos: 142
+→ Gráfico de cadastros
+
+# 2. Listar usuários
+→ Buscar: "joão"
+→ Filtrar: Role = "editor"
+
+# 3. Criar usuário
+→ Preencher formulário
+→ Selecionar roles
+
+# 4. Editar
+→ Adicionar role "admin"
+→ Adicionar permission "reports.view"
+→ Ver permissions efetivas
+
+# 5. Resetar senha
+→ Email enviado
+```
+
+#### Riscos
+
+- **Médio:** Complexidade de UI
+- **Baixo:** Performance com muitos usuários
+
+---
+
+### SLICE-008: UI Administrativa - Gestão de Roles, Permissions e Clients
+
+**Prioridade:** Alta  
+**Story Points:** 13  
+**Dependências:** SLICE-007
+
+#### Valor de Negócio
+
+Administradores gerenciam roles, permissions e clients através de interface web.
+
+#### Descrição
+
+Expandir painel administrativo com gestão completa.
+
+#### Escopo Técnico
+
+**Application:**
+- ClientManagementService (CRUD, GenerateSecret)
+
+**API:**
+- ClientsController expandido
+
+**UI:**
+1. Gestão de Roles (/admin/roles)
+2. Gestão de Permissions (/admin/permissions)
+3. Gestão de Clients (/admin/clients)
+4. Navegação sidebar
+
+**Funcionalidades Especiais:**
+- Regenerar client_secret (exibe uma vez)
+- Múltiplos redirect URIs
+- Seleção de permissions do client
+
+#### Critérios de Aceitação
+
+- [ ] CRUD de Roles via UI
+- [ ] CRUD de Permissions via UI
+- [ ] CRUD de Clients via UI
+- [ ] Associar permissions a roles
+- [ ] Ver usuários com role
+- [ ] Ver onde permission é usada
+- [ ] Criar client completo
+- [ ] Editar redirect URIs
+- [ ] Editar scopes
+- [ ] Editar permissions do client
+- [ ] Regenerar secret
+- [ ] Secret exibido uma vez
+- [ ] Copiar para clipboard
+- [ ] Ativar/desativar client
+- [ ] Navegação sidebar
+
+#### Demo
+
+```bash
+# 1. Criar role
+→ "content-manager"
+→ Adicionar permissions: posts.create, posts.edit
+
+# 2. Criar permission
+→ "analytics.view"
+→ Ver onde é usada
+
+# 3. Criar client
+→ "mobile-app"
+→ Type: public
+→ Redirect: myapp://callback
+→ Scopes: openid, profile, email
+→ Permissions: posts.read, posts.create
+
+# 4. Regenerar secret
+→ Novo secret: "abc123xyz..."
+→ Copiar
+→ Aviso: "Não será exibido novamente"
+```
+
+#### Riscos
+
+- **Médio:** Complexidade de UI
+- **Baixo:** Regeneração pode quebrar integrações
+
+---
+
+### SLICE-009: Sistema de Auditoria Completo
+
+**Prioridade:** Alta  
+**Story Points:** 8  
+**Dependências:** SLICE-008
+
+#### Valor de Negócio
+
+Todas as ações críticas são registradas para rastreabilidade, conformidade (LGPD/GDPR) e investigação de incidentes.
+
+#### Descrição
+
+Implementar sistema completo de auditoria com UI para visualização.
+
+#### Escopo Técnico
+
+**Banco de Dados:**
+- Tabela AuditLogs (Id, EventType, EntityType, EntityId, UserId, ClientId, Timestamp, IpAddress, UserAgent, Data)
+- Índices: Timestamp, UserId, ClientId, EventType
+
+**Application:**
+- AuditService (LogEvent, Search)
+- Background service para processamento assíncrono
+
+**Middleware:**
+- AuditMiddleware (captura IP, User-Agent)
+
+**Eventos:**
+- Autenticação: LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, etc.
+- Autorização: CONSENT_GRANTED, TOKEN_ISSUED, etc.
+- Administração: USER_CREATED, ROLE_CREATED, etc.
+
+**API:**
+- AuditController (GET /api/audit/logs, export CSV/JSON)
+
+**UI:**
+- Página /admin/audit
+- Filtros: data, evento, usuário, client, IP
+- Exportação
+- Visualização de detalhes (JSON)
+
+**Processamento:**
+- Assíncrono (não bloqueia)
+- Queue in-memory ou RabbitMQ
+
+**Retenção:**
+- Configurável (padrão: 1 ano)
+- Job de limpeza automática
+
+**Segurança:**
+- Dados sensíveis não logados
+
+#### Critérios de Aceitação
+
+- [ ] Todos eventos registrados
+- [ ] Middleware captura IP/User-Agent
+- [ ] Processamento assíncrono
+- [ ] UI funcional
+- [ ] Filtros funcionais
+- [ ] Exportação CSV/JSON
+- [ ] Visualização de detalhes
+- [ ] Paginação
+- [ ] Dados sensíveis não logados
+- [ ] Job de limpeza
+- [ ] Performance adequada
+
+#### Demo
+
+```bash
+# 1. Eventos registrados automaticamente
+
+# 2. Acessar auditoria
+http://localhost:5000/admin/audit
+
+# 3. Filtrar
+→ Data: Últimos 7 dias
+→ Evento: LOGIN_FAILED
+→ Usuário: joao@example.com
+
+# 4. Ver detalhes
+{
+  "eventType": "LOGIN_FAILED",
+  "userId": "user-123",
+  "timestamp": "2026-03-19T10:30:00Z",
+  "ipAddress": "192.168.1.100",
+  "data": {"reason": "invalid_password"}
+}
+
+# 5. Exportar
+→ Download: audit_logs_2026-03-19.csv
+```
+
+#### Riscos
+
+- **Médio:** Alto volume pode impactar performance
 - **Baixo:** Dados sensíveis podem vazar se mal implementado
 
 ---
 
-### PBI-019: Segurança Avançada e Hardening
+### SLICE-010: Segurança Avançada e Hardening
 
 **Prioridade:** Alta  
 **Story Points:** 8  
-**Dependências:** PBI-004, PBI-006
+**Dependências:** SLICE-009
+
+#### Valor de Negócio
+
+Sistema protegido contra ataques comuns e em conformidade com melhores práticas de segurança (OWASP).
 
 #### Descrição
 
-Implementar medidas avançadas de segurança, incluindo proteções adicionais, headers de segurança, rate limiting avançado e monitoramento de segurança.
+Implementar medidas avançadas de segurança, headers, rate limiting avançado e monitoramento.
 
-#### Análise Técnica
+#### Escopo Técnico
 
-**Medidas de Segurança:**
+**Headers de Segurança:**
+- Content-Security-Policy, X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, HSTS, Referrer-Policy
 
-1. **Headers de Segurança:**
-   - Content-Security-Policy (CSP)
-   - X-Content-Type-Options: nosniff
-   - X-Frame-Options: DENY
-   - X-XSS-Protection: 1; mode=block
-   - Strict-Transport-Security (HSTS)
-   - Referrer-Policy: no-referrer
+**Rate Limiting Avançado:**
+- Por endpoint, IP, usuário, client
+- Sliding window algorithm
+- Redis para storage distribuído
 
-2. **Rate Limiting Avançado:**
-   - Por endpoint (diferente para cada)
-   - Por IP (global)
-   - Por usuário (autenticado)
-   - Por client (OAuth)
-   - Sliding window algorithm
+**Proteções:**
+- CSRF, SQL Injection, XSS, Clickjacking, Open Redirect
 
-3. **Proteção Contra Ataques:**
-   - CSRF (anti-forgery tokens)
-   - SQL Injection (parameterized queries)
-   - XSS (output encoding)
-   - Clickjacking (X-Frame-Options)
-   - Open Redirect (validação estrita de redirect_uri)
-
-4. **Secrets Management:**
-   - Chaves privadas JWT em secrets manager
-   - Client secrets hasheados
-   - Connection strings em variáveis de ambiente
-   - Rotação de secrets
-
-5. **Monitoramento de Segurança:**
-   - Alertas em eventos suspeitos:
-     * Múltiplas tentativas de login falhas
-     * Tentativas de acesso não autorizado
-     * Padrões anômalos de requisições
-   - Integração com SIEM (opcional)
-
-6. **HTTPS Obrigatório:**
-   - Redirect HTTP → HTTPS
-   - HSTS preload
-
-#### Ferramentas e Tecnologias
-
-**Headers:**
-- NWebsec (ASP.NET Core middleware)
-
-**Rate Limiting:**
-- AspNetCoreRateLimit (configuração avançada)
-- Redis (distributed cache para rate limiting)
-
-**Secrets:**
-- Azure Key Vault, AWS Secrets Manager ou HashiCorp Vault
-- Environment variables
+**Secrets Management:**
+- Chaves JWT em Azure Key Vault / AWS Secrets / HashiCorp Vault
+- Client secrets hasheados
+- Connection strings em env vars
+- Rotação de chaves JWT
 
 **Monitoramento:**
-- Application Insights ou Datadog
-- Sentry (error tracking)
+- Alertas: múltiplas tentativas falhas, acessos não autorizados, padrões anômalos
+- Application Insights / Datadog
+
+**HTTPS:**
+- Redirect HTTP → HTTPS
+- HSTS preload
 
 #### Critérios de Aceitação
 
-- [ ] Todos os headers de segurança configurados
-- [ ] Rate limiting configurado por endpoint
-- [ ] CSRF protection em todas as formas
-- [ ] Output encoding automático (XSS prevention)
-- [ ] Secrets em secret manager ou env vars
-- [ ] HTTPS obrigatório (redirect configurado)
-- [ ] HSTS habilitado
-- [ ] Alertas de segurança configurados
-- [ ] Scan de segurança passando (OWASP ZAP ou similar)
+- [ ] Headers de segurança configurados
+- [ ] CSP funcional
+- [ ] HSTS habilitado (prod)
+- [ ] Rate limiting por endpoint
+- [ ] Rate limiting com Redis
+- [ ] CSRF protection
+- [ ] Secrets em secret manager
+- [ ] Chaves JWT em secret manager
+- [ ] Client secrets hasheados
+- [ ] HTTPS obrigatório
+- [ ] Rotação de chaves suportada
+- [ ] Alertas configurados
+- [ ] Monitoramento integrado
+- [ ] Scan OWASP ZAP passando
 - [ ] Documentação de segurança
+- [ ] Checklist de produção
 
-#### Testes
+#### Demo
 
-**Testes de Segurança:**
-- Scan com OWASP ZAP
-- Testes de penetração (pentest)
-- Validação de headers (securityheaders.com)
+```bash
+# 1. Headers
+curl -I http://localhost:5000
+→ Content-Security-Policy: default-src 'self'
+→ X-Frame-Options: DENY
+→ Strict-Transport-Security: max-age=31536000
 
-**Testes de Rate Limiting:**
-- Validar limites sendo aplicados
-- Diferentes cenários de throttling
+# 2. Rate limiting
+for i in {1..10}; do curl http://localhost:5000/api/auth/login; done
+→ Primeiras 5: OK
+→ Restantes: 429 Too Many Requests
+
+# 3. HTTPS redirect
+curl http://localhost:5000
+→ 301 → https://localhost:5000
+
+# 4. CSRF
+curl -X POST http://localhost:5000/admin/users
+→ 400 Bad Request (CSRF token missing)
+
+# 5. Scan
+zap-cli quick-scan http://localhost:5000
+→ 0 high, 0 medium
+
+# 6. Monitoramento
+→ Dashboard: Tentativas falhas, alertas, bloqueios
+```
 
 #### Riscos
 
 - **Alto:** Configurações incorretas podem criar vulnerabilidades
-- **Médio:** Rate limiting muito agressivo pode bloquear usuários legítimos
+- **Médio:** Rate limiting agressivo pode bloquear usuários legítimos
 
 ---
 
-### PBI-020: Documentação Completa e Deployment
+### SLICE-011: Documentação Completa e Guias de Integração
 
 **Prioridade:** Alta  
 **Story Points:** 8  
-**Dependências:** Todas as anteriores
+**Dependências:** SLICE-010
+
+#### Valor de Negócio
+
+Desenvolvedores podem integrar sistemas ao SSO facilmente através de documentação clara e exemplos.
 
 #### Descrição
 
-Criar documentação completa do sistema (técnica e de usuário), guias de deployment e configuração para produção.
+Criar documentação técnica completa, guias de integração e exemplos de código.
 
-#### Análise Técnica
+#### Escopo Técnico
 
-**Documentação a ser Criada:**
+**Documentação Técnica:**
+1. Arquitetura (diagramas C4)
+2. Modelo de dados (ER diagram)
+3. Fluxos OAuth/OIDC (sequence diagrams)
+4. API Reference (Swagger completo)
+5. Guia de desenvolvimento
 
-1. **Documentação Técnica:**
-   - Arquitetura do sistema (diagramas)
-   - Modelo de dados (ER diagram)
-   - Fluxos OAuth 2.0 e OIDC (sequence diagrams)
-   - API Reference (Swagger/OpenAPI)
-   - Guia de desenvolvimento (setup local)
-   - Guia de contribuição
+**Guias de Integração:**
+1. Web Apps (ASP.NET, Node.js, Python)
+2. SPAs (React, Vue, Angular)
+3. Mobile (iOS, Android, React Native, Flutter)
+4. APIs/Microservices
 
-2. **Documentação de Operações:**
-   - Guia de deployment (Docker, Kubernetes)
-   - Configuração de ambiente (variáveis)
-   - Backup e recuperação
-   - Monitoramento e observabilidade
-   - Troubleshooting
-   - Runbooks para incidentes comuns
+**Exemplos de Código:**
+- Repositórios GitHub:
+  - sso-example-webapp
+  - sso-example-spa
+  - sso-example-mobile-ios
+  - sso-example-mobile-android
 
-3. **Documentação de Integração:**
-   - Guia para desenvolvedores de clients
-   - Exemplos de código (C#, JavaScript, Python)
-   - Bibliotecas recomendadas
-   - Fluxos de autenticação step-by-step
-   - Tratamento de erros
-   - Boas práticas
+**Documentação de Operações:**
+1. Deployment (Docker, Kubernetes, Azure, AWS)
+2. Configuração (env vars, secrets)
+3. Monitoramento
+4. Backup e recuperação
+5. Troubleshooting
 
-4. **Documentação de Usuário:**
-   - Guia de uso da UI Admin
-   - Tutoriais em vídeo (opcional)
-   - FAQ
-
-**Deployment:**
-
-1. **Containerização:**
-   - Dockerfile otimizado (multi-stage)
-   - Docker Compose para stack completa
-
-2. **Kubernetes:**
-   - Helm charts
-   - Manifests (deployment, service, ingress)
-   - ConfigMaps e Secrets
-   - Health checks e readiness probes
-
-3. **CI/CD:**
-   - Pipeline completo (build, test, deploy)
-   - Ambientes: dev, staging, production
-   - Blue-green deployment ou canary
-
-4. **Configuração de Produção:**
-   - Checklist de segurança
-   - Performance tuning
-   - Scaling (horizontal e vertical)
-   - Load balancing
-
-#### Ferramentas e Tecnologias
-
-**Documentação:**
-- Markdown (docs gerais)
-- Mermaid (diagramas)
-- Swagger UI (API docs)
-- Docusaurus ou MkDocs (site de documentação)
-
-**Diagramas:**
-- PlantUML ou Draw.io
-- Mermaid (inline em Markdown)
-
-**Deployment:**
-- Docker e Docker Compose
-- Kubernetes + Helm
-- GitHub Actions ou GitLab CI
-
-**Monitoramento:**
-- Prometheus + Grafana
-- Application Insights
+**Site:**
+- Docusaurus ou MkDocs
+- Hospedado (GitHub Pages)
+- Busca integrada
+- Versionamento
 
 #### Critérios de Aceitação
 
 - [ ] Documentação técnica completa
-- [ ] Documentação de operações completa
-- [ ] Guia de integração com exemplos de código
-- [ ] Documentação de usuário (Admin UI)
-- [ ] Dockerfile otimizado
-- [ ] Helm charts para Kubernetes
-- [ ] Pipeline CI/CD completo
-- [ ] Ambientes dev, staging, prod configurados
-- [ ] Health checks implementados
-- [ ] Monitoramento configurado
-- [ ] Checklist de produção criado
-- [ ] Site de documentação publicado
+- [ ] Diagramas criados
+- [ ] Modelo de dados documentado
+- [ ] Fluxos documentados
+- [ ] API Reference completa
+- [ ] Guias de integração (web, SPA, mobile, API)
+- [ ] Exemplos funcionais (4 repos)
+- [ ] Documentação de deployment
+- [ ] Guia de configuração
+- [ ] Guia de monitoramento
+- [ ] Guia de backup
+- [ ] Troubleshooting guide
+- [ ] Site publicado
+- [ ] Busca funcionando
+- [ ] Versionamento configurado
 
-#### Testes
+#### Demo
 
-**Testes de Deployment:**
-- Deploy em ambiente de staging
-- Deploy em ambiente de produção (simulado)
-- Health checks funcionando
-- Rollback funcional
+```bash
+# 1. Site de documentação
+https://sso-docs.example.com
 
-**Testes de Documentação:**
-- Seguir guias de integração (smoke test)
-- Validar exemplos de código
+# 2. Navegação
+→ Getting Started
+→ Architecture
+→ API Reference
+→ Integration Guides
+  → Web Apps
+  → SPAs
+  → Mobile Apps
+→ Operations
+→ Troubleshooting
+
+# 3. Seguir guia (React SPA)
+npm install @example/sso-client
+
+const sso = new SSOClient({
+  issuer: 'https://sso.example.com',
+  clientId: 'my-spa',
+  redirectUri: 'http://localhost:3000/callback'
+});
+
+sso.login();
+
+# 4. Clonar exemplo
+git clone https://github.com/example/sso-example-spa
+npm install
+npm start
+→ Funciona imediatamente
+
+# 5. Buscar
+→ "refresh token"
+→ Resultados relevantes
+```
 
 #### Riscos
 
-- **Médio:** Documentação pode ficar desatualizada rapidamente
-- **Baixo:** Deployment complexo pode gerar problemas iniciais
+- **Médio:** Documentação pode ficar desatualizada
+- **Baixo:** Exemplos podem quebrar com updates
+
+---
+
+### SLICE-012: Deployment e Configuração de Produção
+
+**Prioridade:** Alta  
+**Story Points:** 13  
+**Dependências:** SLICE-011
+
+#### Valor de Negócio
+
+Sistema pode ser implantado em produção de forma segura, escalável e monitorada.
+
+#### Descrição
+
+Preparar sistema para produção com containerização, Kubernetes, CI/CD completo e monitoramento.
+
+#### Escopo Técnico
+
+**Containerização:**
+1. Dockerfile otimizado (multi-stage, Alpine, non-root, health checks)
+2. Docker Compose (stack completa)
+
+**Kubernetes:**
+1. Helm Charts (API, PostgreSQL, Redis)
+2. Manifests (Deployment, Service, Ingress, ConfigMaps, Secrets, HPA)
+3. Health Checks (liveness, readiness, startup)
+
+**CI/CD (GitHub Actions):**
+1. Pipeline: build, testes, análise (SonarQube), scan (Trivy), Docker build/push, deploy
+2. Ambientes: dev (auto), staging (auto), prod (manual)
+3. Estratégias: rolling update, blue-green, canary
+
+**Configuração de Produção:**
+1. Checklist de segurança
+2. Performance tuning (connection pooling, Redis cache, compressão)
+3. Scaling (HPA, recursos adequados)
+4. Load balancing (Ingress NGINX)
+
+**Monitoramento:**
+1. Application Insights / Datadog
+2. Prometheus + Grafana
+3. Alertas (CPU, erros, latência, logins falhos)
+
+**Backup:**
+- PostgreSQL automático (diário)
+- Chaves JWT
+- Retenção: 30 dias
+- Testes mensais
+
+#### Critérios de Aceitação
+
+- [ ] Dockerfile otimizado
+- [ ] Docker Compose funcional
+- [ ] Helm charts criados
+- [ ] Manifests completos
+- [ ] Health checks implementados
+- [ ] Pipeline CI/CD completo
+- [ ] Build e testes automatizados
+- [ ] Análise de código (SonarQube)
+- [ ] Scan de segurança (Trivy)
+- [ ] Deploy automático (staging)
+- [ ] Deploy manual (prod)
+- [ ] Ambientes configurados
+- [ ] HPA configurado
+- [ ] Ingress com HTTPS
+- [ ] Secrets em secret manager
+- [ ] Monitoramento configurado
+- [ ] Alertas configurados
+- [ ] Backup automático
+- [ ] Checklist criado
+- [ ] Load testing executado
+- [ ] Rollback testado
+
+#### Demo
+
+```bash
+# 1. Build Docker
+docker build -t sso-api:1.0.0 .
+→ Imagem: 150MB
+
+# 2. Docker Compose
+docker-compose up
+→ API, PostgreSQL, Redis rodando
+
+# 3. Deploy Kubernetes (staging)
+helm install sso ./helm/sso \
+  --namespace staging \
+  --values values-staging.yaml
+
+# 4. Verificar pods
+kubectl get pods -n staging
+→ sso-api-xxx: Running (3/3)
+→ postgresql-xxx: Running
+→ redis-xxx: Running
+
+# 5. Health checks
+curl https://sso-staging.example.com/health/live
+→ 200 OK
+
+curl https://sso-staging.example.com/health/ready
+→ 200 OK
+
+# 6. Auto-scaling
+kubectl get hpa -n staging
+→ sso-api: 3/10 replicas (30% CPU)
+
+# 7. Load test
+k6 run load-test.js
+→ 1000 req/s
+→ HPA escala para 8 replicas
+
+# 8. Monitoramento
+→ Grafana dashboard
+→ Métricas: Requests/s, Latência, Erros
+
+# 9. Deploy production
+git tag v1.0.0
+git push --tags
+→ Pipeline aguarda aprovação
+→ Aprovar
+→ Rolling update
+→ Zero downtime
+
+# 10. Verificar
+curl https://sso.example.com/health/ready
+→ 200 OK
+
+# 11. Rollback (se necessário)
+helm rollback sso -n production
+```
+
+#### Riscos
+
+- **Alto:** Problemas em produção afetam múltiplos sistemas
+- **Médio:** Configuração incorreta pode causar downtime
+- **Médio:** Secrets management requer atenção
 
 ---
 
 ## 5. Resumo do Backlog
 
-### Distribuição por Prioridade
+### Distribuição por Fase
 
-- **Alta:** 15 PBIs
-- **Média:** 5 PBIs
+- **Fase 1 - MVP Funcional:** Slices 1-4 (55 SP)
+- **Fase 2 - Suporte Mobile:** Slices 5-6 (21 SP)
+- **Fase 3 - Autorização Avançada:** Slices 7-9 (34 SP)
+- **Fase 4 - Gestão e Operação:** Slices 10-12 (29 SP)
 
 ### Estimativa Total
 
-**Total de Story Points:** 128
+**Total de Story Points:** 139
 
-**Estimativa de Sprints (assumindo 20-25 SP por sprint):**
-- 5-7 sprints (10-14 semanas para um time de 3-5 devs)
+**Estimativa de Tempo:**
+- Time de 3-5 devs
+- Velocidade: 20-25 SP por sprint (2 semanas)
+- Duração: 6-7 sprints (12-14 semanas)
 
 ### Roadmap Visual
 
 ```
-Sprint 1 (PBIs 1-4):   Fundação + Autenticação Básica
-Sprint 2 (PBIs 5-8):   OAuth 2.0 Core
-Sprint 3 (PBIs 9-11):  OpenID Connect
-Sprint 4 (PBIs 12-14): Autorização + Consentimento
-Sprint 5 (PBIs 15-17): UIs (Login, Cadastro, Admin)
-Sprint 6 (PBIs 18-20): Segurança + Documentação + Deploy
+Sprint 1-2: SLICE-001, SLICE-002 (MVP OAuth básico)
+Sprint 3:   SLICE-003, SLICE-004 (Mobile + RBAC)
+Sprint 4:   SLICE-005, SLICE-006 (Consentimento + UI Login)
+Sprint 5:   SLICE-007, SLICE-008 (Admin UI completo)
+Sprint 6:   SLICE-009, SLICE-010 (Auditoria + Segurança)
+Sprint 7:   SLICE-011, SLICE-012 (Docs + Produção)
 ```
 
 ---
 
-## 6. Próximos Passos
+## 6. Vantagens da Abordagem por Vertical Slices
 
-1. **Refinamento do Backlog:** Revisar PBIs com time técnico
-2. **Priorização Final:** Ajustar prioridades conforme necessidades de negócio
-3. **Definição de DoR/DoD:** Definition of Ready e Definition of Done
-4. **Setup do Projeto:** Executar PBI-001
-5. **Iniciar Sprint 1:** Começar desenvolvimento
+### Comparação com Abordagem Anterior
+
+**Horizontal (Anterior):**
+- ❌ Valor entregue apenas no final
+- ❌ Integração tardia (problemas descobertos tarde)
+- ❌ Difícil demonstrar progresso
+- ❌ Risco alto de retrabalho
+
+**Vertical (Atual):**
+- ✅ Valor entregue a cada slice
+- ✅ Integração contínua (problemas descobertos cedo)
+- ✅ Fácil demonstrar progresso (demos funcionais)
+- ✅ Risco reduzido (feedback rápido)
+
+### Benefícios Práticos
+
+1. **Feedback Rápido:** Cada slice pode ser testada e validada
+2. **Flexibilidade:** Prioridades podem mudar entre slices
+3. **Paralelização:** Slices independentes podem ser desenvolvidas em paralelo
+4. **Motivação:** Time vê funcionalidades completas sendo entregues
+5. **Redução de Risco:** Problemas arquiteturais descobertos cedo
 
 ---
 
-## 7. Notas e Considerações
+## 7. Próximos Passos
 
-### Dependências Externas
-- Servidor de email (para recuperação de senha e ativação)
-- Secret manager (Azure Key Vault, AWS Secrets, etc.)
-- Ferramentas de monitoramento
-
-### Decisões Arquiteturais a Serem Tomadas
-- Escolha de banco de dados (PostgreSQL vs SQL Server)
-- Frontend da Admin UI (Blazor vs React/Vue)
-- Infraestrutura de deployment (Cloud vs On-premise)
-
-### Riscos Globais do Projeto
-- **Alto:** Segurança é crítica - vulnerabilidades podem ser catastróficas
-- **Médio:** Performance sob alta carga (scaling horizontal essencial)
-- **Médio:** Complexidade de integração com múltiplos clients
-
-### Recomendações
-1. Priorizar segurança desde o início (não deixar para depois)
-2. Implementar testes automatizados desde a primeira PBI
-3. Realizar code reviews rigorosos
-4. Considerar pentest ao final do desenvolvimento
-5. Documentar decisões arquiteturais (ADRs - Architecture Decision Records)
+1. **Refinamento:** Revisar slices com time técnico
+2. **Priorização:** Confirmar ordem de implementação
+3. **Setup:** Preparar ambiente de desenvolvimento
+4. **Kick-off:** Iniciar SLICE-001
 
 ---
 
