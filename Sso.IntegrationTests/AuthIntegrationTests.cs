@@ -9,7 +9,7 @@ using Sso.Infrastructure.Persistence.Seeds;
 
 namespace Sso.IntegrationTests;
 
-public class AuthIntegrationTests : IClassFixture<CustomWebApplicationFactory<Program>>
+public class AuthIntegrationTests : IClassFixture<CustomWebApplicationFactory<Program>>, IAsyncLifetime
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory<Program> _factory;
@@ -21,11 +21,26 @@ public class AuthIntegrationTests : IClassFixture<CustomWebApplicationFactory<Pr
         {
             AllowAutoRedirect = false
         });
+    }
 
-        // Seed
+    public async Task InitializeAsync()
+    {
+        // Seed data before each test
         using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<SsoDbContext>();
+        
+        // Clear existing data
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
+        
+        // Seed fresh data
         var userSeed = scope.ServiceProvider.GetRequiredService<UserSeed>();
-        userSeed.SeedAsync().GetAwaiter().GetResult();
+        await userSeed.SeedAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 
     [Fact]
