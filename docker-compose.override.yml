@@ -1,0 +1,15 @@
+services:
+    db:
+        container_name: sso_db
+        image: postgres:16
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_DB: sso_dev
+            POSTGRES_USER: sso
+            POSTGRES_PASSWORD: sso
+        volumes:
+            - sso_pgdata:/var/lib/postgresql/data
+
+volumes:
+    sso_pgdata:

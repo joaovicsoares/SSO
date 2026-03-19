@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+    tests:
+        build:
+            context: .
+            dockerfile: Docker/Dockerfile.test
+        environment:
+            ASPNETCORE_ENVIRONMENT: Testing
+        volumes:
+            - .:/app

@@ -5,6 +5,8 @@ bin/
 obj/
 out/
 
+important
+
 *.user
 *.suo
 *.userosscache
@@ -67,3 +69,4 @@ Thumbs.db
 *.pfx
 *.pem
 *.crt
+*.cer
