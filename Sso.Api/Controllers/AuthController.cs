@@ -69,4 +69,24 @@ public class AuthController(IAuthService authenticationService) : ControllerBase
 
         return Ok(new { guid, email, name });
     }
+
+    [HttpPost("register")]
+    [EnableRateLimiting("login")]
+    public async Task<IActionResult> RegisterAsync(
+        [FromBody] RegisterRequest request,
+        CancellationToken cancellationToken)
+    {
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        var userAgent = HttpContext.Request.Headers.UserAgent.ToString();
+        
+        var result = await authenticationService.RegisterUserAsync(
+            request, ipAddress, userAgent, cancellationToken);
+
+        if (result is null)
+        {
+            return BadRequest(new { message = "Email já cadastrado ou inválido" });
+        }
+
+        return Ok(new { message = "Usuário registrado com sucesso", user = result });
+    }
 }
