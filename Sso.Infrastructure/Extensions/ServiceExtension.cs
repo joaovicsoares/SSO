@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Sso.Application.Authentication;
 using Sso.Application.Persistence;
 using Sso.Domain.Repositories;
 using Sso.Domain.Services;
@@ -34,6 +35,9 @@ namespace Sso.Infrastructure.Extensions
 
             // Register password hasher
             serviceCollection.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
+
+            // Register JWT service
+            serviceCollection.AddScoped<IJwtService, JwtService>();
 
                 return serviceCollection;
             }
