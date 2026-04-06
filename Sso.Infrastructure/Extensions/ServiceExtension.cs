@@ -39,6 +39,13 @@ namespace Sso.Infrastructure.Extensions
             // Register JWT service
             serviceCollection.AddScoped<IJwtService, JwtService>();
 
+            // Register OAuth repositories
+            serviceCollection.AddScoped<IAuthorizationCodeRepository, AuthorizationCodeRepository>();
+            serviceCollection.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+            // Register OAuth service
+            serviceCollection.AddScoped<IOAuthService, OAuthService>();
+
                 return serviceCollection;
             }
         }
