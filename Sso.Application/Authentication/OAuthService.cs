@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
 using Sso.Application.Persistence;
 using Sso.Domain.Entities;
 using Sso.Domain.Repositories;
@@ -34,6 +33,21 @@ public class OAuthService : IOAuthService
         string? codeChallengeMethod,
         CancellationToken cancellationToken = default)
     {
+        // Buscar usuário
+        var user = await _userRepository.GetByGuidAsync(userId, cancellationToken);
+        if (user == null || !user.IsActive)
+            throw new InvalidOperationException("User not found or inactive");
+
+        // TODO: Buscar client real - por enquanto, criar um client temporário
+        // Isso precisa ser implementado quando houver um ClientRepository
+        var client = new Client
+        {
+            Name = "Default Client",
+            ClientId = "default-client",
+            ClientSecret = "secret",
+            RedirectUris = "http://localhost:3000/callback"
+        };
+
         // Gerar código aleatório criptograficamente seguro (32 bytes = 256 bits)
         var codeBytes = new byte[32];
         using var rng = RandomNumberGenerator.Create();
@@ -49,9 +63,9 @@ public class OAuthService : IOAuthService
         var authCode = new AuthorizationCode
         {
             Code = code,
-            UserId = userId,
-            CodeChallenge = codeChallenge,
-            CodeChallengeMethod = codeChallengeMethod,
+            User = user,
+            Client = client,
+            RedirectUri = client.RedirectUris, // TODO: validar redirect_uri do request
             ExpiresAt = DateTime.UtcNow.AddMinutes(10), // Código expira em 10 minutos (padrão OAuth)
             IsUsed = false
         };
@@ -77,40 +91,25 @@ public class OAuthService : IOAuthService
         if (authCode == null || authCode.IsUsed || authCode.ExpiresAt < DateTime.UtcNow)
             return null;
 
-        // 3. Validar PKCE se code_challenge foi fornecido no /authorize
-        if (authCode.CodeChallenge != null)
-        {
-            // Se tinha code_challenge, DEVE ter code_verifier agora
-            if (codeVerifier == null)
-                return null;
-
-            // Validar usando o método correto (S256 ou plain)
-            var isValid = authCode.CodeChallengeMethod?.ToLower() == "s256"
-                ? ValidateS256(codeVerifier, authCode.CodeChallenge)
-                : ValidatePlain(codeVerifier, authCode.CodeChallenge);
-
-            if (!isValid)
-                return null;
-        }
-
-        // 4. Marcar código como usado (previne replay attacks)
+        // 3. Marcar código como usado (previne replay attacks)
         authCode.IsUsed = true;
 
-        // 5. Buscar usuário
-        var user = authCode.User ?? await _userRepository.GetByGuidAsync(authCode.UserId, cancellationToken);
+        // 4. Buscar usuário
+        var user = authCode.User;
         if (user == null || !user.IsActive)
             return null;
 
-        // 6. Gerar os três tokens
+        // 5. Gerar os três tokens
         var accessToken = _jwtService.GenerateAccessToken(user);
         var idToken = _jwtService.GenerateIdToken(user);
         var refreshToken = _jwtService.GenerateRefreshToken();
 
-        // 7. Armazenar refresh token no banco (para controle e revogação futura)
+        // 6. Armazenar refresh token no banco (para controle e revogação futura)
         var refreshTokenEntity = new RefreshToken
         {
             Token = refreshToken,
-            UserId = user.Id,
+            User = user,
+            Client = authCode.Client,
             ExpiresAt = DateTime.UtcNow.AddDays(30), // Refresh token dura 30 dias
             IsRevoked = false
         };
@@ -118,34 +117,12 @@ public class OAuthService : IOAuthService
         _refreshTokenRepository.Add(refreshTokenEntity);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // 8. Retornar todos os tokens
+        // 7. Retornar todos os tokens
         return new TokenResponse(
             accessToken, 
             idToken, 
             refreshToken, 
             900 // expires_in: 900 segundos = 15 minutos
         );
-    }
-
-    /// <summary>
-    /// Valida PKCE usando SHA256 (método S256)
-    /// </summary>
-    private static bool ValidateS256(string verifier, string challenge)
-    {
-        using var sha256 = SHA256.Create();
-        var hash = sha256.ComputeHash(Encoding.ASCII.GetBytes(verifier));
-        var computedChallenge = Convert.ToBase64String(hash)
-            .Replace("+", "-")
-            .Replace("/", "_")
-            .Replace("=", "");
-        return computedChallenge == challenge;
-    }
-
-    /// <summary>
-    /// Valida PKCE usando método plain (sem hash)
-    /// </summary>
-    private static bool ValidatePlain(string verifier, string challenge)
-    {
-        return verifier == challenge;
     }
 }

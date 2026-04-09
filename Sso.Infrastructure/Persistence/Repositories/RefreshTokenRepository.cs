@@ -24,6 +24,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     {
         return await _context.RefreshTokens
             .Include(rt => rt.User)  // Carrega o User junto para evitar queries extras
+            .Include(rt => rt.Client) // Carrega o Client junto
             .FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
     }
 }

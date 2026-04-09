@@ -46,15 +46,19 @@ public class AuthController(IAuthService authenticationService) : ControllerBase
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal);
             
-        return Ok(new { message = "Login realizado com sucesso" });
+        return Ok(result);
     }
 
     [Authorize]
     [HttpPost("Logout")]
     public async Task<IActionResult> LogoutAsync()
     {
+        // Sign out from cookie authentication
         await HttpContext.SignOutAsync(
             CookieAuthenticationDefaults.AuthenticationScheme);
+
+        // For JWT clients, they should discard the token on their side
+        // Optionally, you could implement token revocation here
 
         return Ok(new { message = "Logout realizado com sucesso" });
     }
@@ -68,6 +72,47 @@ public class AuthController(IAuthService authenticationService) : ControllerBase
         var name = User.FindFirstValue(ClaimTypes.Name);
 
         return Ok(new { guid, email, name });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshTokenAsync(
+        [FromBody] RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        var userAgent = HttpContext.Request.Headers.UserAgent.ToString();
+
+        var result = await authenticationService.RefreshTokenAsync(
+            request.RefreshToken, ipAddress, userAgent, cancellationToken);
+
+        if (result is null)
+        {
+            return Unauthorized(new { message = "Refresh token inválido ou expirado" });
+        }
+
+        // Optionally set cookie for web clients
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, result.Guid),
+            new(ClaimTypes.Email, result.Email),
+        };
+
+        if (result.Name is not null)
+        {
+            claims.Add(new Claim(ClaimTypes.Name, result.Name));
+        }
+
+        var identity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme);
+
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal);
+
+        return Ok(result);
     }
 
     [HttpPost("register")]
@@ -87,6 +132,28 @@ public class AuthController(IAuthService authenticationService) : ControllerBase
             return BadRequest(new { message = "Email já cadastrado ou inválido" });
         }
 
-        return Ok(new { message = "Usuário registrado com sucesso", user = result });
+        // Set cookie for web clients
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, result.Guid),
+            new(ClaimTypes.Email, result.Email),
+        };
+
+        if (result.Name is not null)
+        {
+            claims.Add(new Claim(ClaimTypes.Name, result.Name));
+        }
+
+        var identity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme);
+
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal);
+
+        return Ok(result);
     }
 }

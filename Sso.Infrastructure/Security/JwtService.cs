@@ -21,7 +21,11 @@ public class JwtService : IJwtService
             ?? throw new InvalidOperationException("Jwt:Issuer not configured");
         _audience = configuration["Jwt:Audience"] 
             ?? throw new InvalidOperationException("Jwt:Audience not configured");
-        _accessTokenExpiration = configuration.GetValue<int>("Jwt:AccessTokenExpirationMinutes", 15);
+        
+        var expirationValue = configuration["Jwt:AccessTokenExpirationMinutes"];
+        _accessTokenExpiration = !string.IsNullOrEmpty(expirationValue) 
+            ? int.Parse(expirationValue) 
+            : 15;
         
         var privateKey = configuration["Jwt:PrivateKey"] 
             ?? throw new InvalidOperationException("Jwt:PrivateKey not configured");

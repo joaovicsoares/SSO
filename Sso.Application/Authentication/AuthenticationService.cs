@@ -12,6 +12,8 @@ public class AuthenticationService(
     IUserRepository userRepository,
     IPasswordHasher passwordHasher,
     IAuditLogRepository auditLogRepository,
+    IRefreshTokenRepository refreshTokenRepository,
+    IJwtService jwtService,
     IUnitOfWork unitOfWork
     ) : IAuthenticationService
 {
@@ -54,8 +56,33 @@ public class AuthenticationService(
             return null;
         }
 
+        // Generate JWT tokens
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var idToken = jwtService.GenerateIdToken(user);
+        var refreshToken = jwtService.GenerateRefreshToken();
+
+        // Store refresh token in database
+        var client = await GetOrCreateDefaultClientAsync(cancellationToken);
+        var refreshTokenEntity = new RefreshToken
+        {
+            Token = refreshToken,
+            User = user,
+            Client = client,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsRevoked = false
+        };
+        refreshTokenRepository.Add(refreshTokenEntity);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
         await LogAsync(EventType.LoginSuccess, ipAddress, userAgent, user);
-        return new LoginResponse(user.Guid.ToString(), user.Email.Value, user.Name);
+        return new LoginResponse(
+            user.Guid.ToString(), 
+            user.Email.Value, 
+            user.Name,
+            accessToken,
+            idToken,
+            refreshToken,
+            900); // 15 minutes in seconds
     }
 
     public async Task<LoginResponse?> RegisterUserAsync(
@@ -99,7 +126,104 @@ public class AuthenticationService(
         // Log registration
         await LogAsync(EventType.UserCreated, ipAddress, userAgent, user);
 
-        return new LoginResponse(user.Guid.ToString(), user.Email.Value, user.Name);
+        // Generate JWT tokens for the new user
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var idToken = jwtService.GenerateIdToken(user);
+        var refreshToken = jwtService.GenerateRefreshToken();
+
+        // Store refresh token in database
+        var client = await GetOrCreateDefaultClientAsync(cancellationToken);
+        var refreshTokenEntity = new RefreshToken
+        {
+            Token = refreshToken,
+            User = user,
+            Client = client,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsRevoked = false
+        };
+        refreshTokenRepository.Add(refreshTokenEntity);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new LoginResponse(
+            user.Guid.ToString(), 
+            user.Email.Value, 
+            user.Name,
+            accessToken,
+            idToken,
+            refreshToken,
+            900); // 15 minutes in seconds
+    }
+
+    public async Task<LoginResponse?> RefreshTokenAsync(
+        string refreshToken,
+        string? ipAddress = null,
+        string? userAgent = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Find the refresh token in the database
+        var tokenEntity = await refreshTokenRepository.GetByTokenAsync(refreshToken, cancellationToken);
+
+        // Validate refresh token
+        if (tokenEntity == null || 
+            tokenEntity.IsRevoked || 
+            tokenEntity.ExpiresAt < DateTime.UtcNow)
+        {
+            await LogAsync(EventType.LoginFailed, ipAddress, userAgent);
+            return null;
+        }
+
+        // Get the user
+        var user = tokenEntity.User;
+        if (user == null || !user.IsActive)
+        {
+            await LogAsync(EventType.LoginFailed, ipAddress, userAgent);
+            return null;
+        }
+
+        // Generate new tokens
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var idToken = jwtService.GenerateIdToken(user);
+        var newRefreshToken = jwtService.GenerateRefreshToken();
+
+        // Revoke old refresh token
+        tokenEntity.IsRevoked = true;
+
+        // Store new refresh token
+        var newRefreshTokenEntity = new RefreshToken
+        {
+            Token = newRefreshToken,
+            User = user,
+            Client = tokenEntity.Client,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsRevoked = false
+        };
+
+        refreshTokenRepository.Add(newRefreshTokenEntity);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await LogAsync(EventType.LoginSuccess, ipAddress, userAgent, user);
+
+        return new LoginResponse(
+            user.Guid.ToString(),
+            user.Email.Value,
+            user.Name,
+            accessToken,
+            idToken,
+            newRefreshToken,
+            900);
+    }
+
+    private async Task<Client> GetOrCreateDefaultClientAsync(CancellationToken cancellationToken = default)
+    {
+        // TODO: Replace with actual client lookup when ClientRepository is implemented
+        // For now, return a temporary client instance
+        return new Client
+        {
+            Name = "Default Client",
+            ClientId = "default-client",
+            ClientSecret = "secret",
+            RedirectUris = "http://localhost:3000/callback"
+        };
     }
 
     private async Task LogAsync(
