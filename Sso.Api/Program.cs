@@ -2,7 +2,6 @@ using Sso.Infrastructure.Persistence;
 using Sso.Infrastructure.Extensions;
 using Sso.Application.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,29 +38,7 @@ builder.Services.AddCors(options =>
 var cookieName = builder.Configuration.GetValue<string>("Authentication:CookieName") ?? "SsoAuth";
 var cookieDurationHours = builder.Configuration.GetValue<int>("Authentication:CookieDurationHours", 8);
 
-builder.Services.AddAuthentication(options =>
-{
-    // Default to Cookie for web, but support JWT Bearer for mobile
-    options.DefaultAuthenticateScheme = "Hybrid";
-    options.DefaultChallengeScheme = "Hybrid";
-})
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-{
-    options.Cookie.Name = cookieName;
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
-        ? CookieSecurePolicy.SameAsRequest
-        : CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Lax; // Changed from Strict to Lax for better compatibility
-    options.ExpireTimeSpan = TimeSpan.FromHours(cookieDurationHours);
-    options.SlidingExpiration = false;
-
-    options.Events.OnRedirectToLogin = context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        return Task.CompletedTask;
-    };
-})
+builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>
 {
     var jwtIssuer = builder.Configuration["Jwt:Issuer"] 
@@ -96,20 +73,6 @@ builder.Services.AddAuthentication(options =>
             }
             return Task.CompletedTask;
         }
-    };
-})
-.AddPolicyScheme("Hybrid", "Cookie or Bearer", options =>
-{
-    options.ForwardDefaultSelector = context =>
-    {
-        // Check if Authorization header with Bearer token exists
-        var authHeader = context.Request.Headers.Authorization.ToString();
-        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-        {
-            return "Bearer";
-        }
-        // Otherwise use Cookie authentication
-        return CookieAuthenticationDefaults.AuthenticationScheme;
     };
 });
 
