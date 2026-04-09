@@ -31,8 +31,6 @@ public class AuthController(IAuthService authenticationService) : ControllerBase
     [HttpPost("logout")]
     public IActionResult LogoutAsync()
     {
-        // With JWT, logout is handled client-side by discarding the token
-        // Optionally, you could implement token blacklisting here
         return Ok(new { message = "Logout realizado com sucesso. Descarte o token no cliente." });
     }
 
@@ -40,7 +38,6 @@ public class AuthController(IAuthService authenticationService) : ControllerBase
     [HttpGet("me")]
     public IActionResult GetMe()
     {
-        // JWT tokens use standard claims (sub, email, name)
         var guid = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         var email = User.FindFirstValue("email") ?? User.FindFirstValue(ClaimTypes.Email);
         var name = User.FindFirstValue("name") ?? User.FindFirstValue(ClaimTypes.Name);

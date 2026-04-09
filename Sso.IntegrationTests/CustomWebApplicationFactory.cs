@@ -18,7 +18,6 @@ public class CustomWebApplicationFactory<TProgram>
 
         builder.ConfigureServices(services =>
         {
-            // Remove existing DbContext registration
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<SsoDbContext>));
             if (descriptor != null)
@@ -26,7 +25,6 @@ public class CustomWebApplicationFactory<TProgram>
                 services.Remove(descriptor);
             }
 
-            // Add InMemory Database with unique name per factory instance
             services.AddDbContext<SsoDbContext>(options =>
             {
                 options.UseInMemoryDatabase(_databaseName);
