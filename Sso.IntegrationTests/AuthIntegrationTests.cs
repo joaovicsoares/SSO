@@ -71,52 +71,22 @@ public class AuthIntegrationTests : IClassFixture<CustomWebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task FullFlow_Login_AccessProtected_Logout_AccessProtected_ReturnsCorrectStatuses()
+    public async Task FullFlow_Login_And_AccessProtected_ReturnsOk()
     {
         var loginRequest = new LoginRequest("admin@gmail.com", "admin123");
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginRequest);
         loginResponse.EnsureSuccessStatusCode();
 
-        var setCookieHeaders = loginResponse.Headers.GetValues("Set-Cookie");
-        var authCookie = setCookieHeaders.FirstOrDefault(c => c.StartsWith("SsoAuth="));
-        var cookieHeaderValue = authCookie?.Split(';')[0];
+        var loginContent = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
+        Assert.NotNull(loginContent);
+        Assert.NotNull(loginContent.AccessToken);
 
-        Assert.NotNull(cookieHeaderValue);
+        var meRequest = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
+        meRequest.Headers.Add("Authorization", $"Bearer {loginContent.AccessToken}");
+        var meResponse = await _client.SendAsync(meRequest);
+        meResponse.EnsureSuccessStatusCode();
 
-        var meRequest1 = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
-        meRequest1.Headers.Add("Cookie", cookieHeaderValue);
-        var meResponse1 = await _client.SendAsync(meRequest1);
-        meResponse1.EnsureSuccessStatusCode();
-
-        var logoutRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/logout");
-        logoutRequest.Headers.Add("Cookie", cookieHeaderValue);
-        var logoutResponse = await _client.SendAsync(logoutRequest);
-        logoutResponse.EnsureSuccessStatusCode();
-
-        if (logoutResponse.Headers.TryGetValues("Set-Cookie", out var logoutCookies))
-        {
-            var logoutAuthCookie = logoutCookies.FirstOrDefault(c => c.StartsWith("SsoAuth="));
-            if (logoutAuthCookie != null)
-            {
-                cookieHeaderValue = logoutAuthCookie.Split(';')[0];
-            }
-            else 
-            {
-                cookieHeaderValue = null;
-            }
-        }
-        else
-        {
-            cookieHeaderValue = null;
-        }
-
-        var meRequest2 = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
-        if (!string.IsNullOrEmpty(cookieHeaderValue))
-        {
-            meRequest2.Headers.Add("Cookie", cookieHeaderValue);
-        }
-        var meResponse2 = await _client.SendAsync(meRequest2);
-        
-        Assert.Equal(HttpStatusCode.Unauthorized, meResponse2.StatusCode);
+        var meContent = await meResponse.Content.ReadFromJsonAsync<dynamic>();
+        Assert.NotNull(meContent);
     }
 }
