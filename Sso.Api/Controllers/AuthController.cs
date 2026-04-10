@@ -28,13 +28,6 @@ public class AuthController(IAuthService authenticationService) : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("logout")]
-    public IActionResult LogoutAsync()
-    {
-        return Ok(new { message = "Logout realizado com sucesso. Descarte o token no cliente." });
-    }
-
-    [Authorize]
     [HttpGet("me")]
     public IActionResult GetMe()
     {
