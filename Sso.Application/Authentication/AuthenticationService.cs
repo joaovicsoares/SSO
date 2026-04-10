@@ -12,7 +12,10 @@ public class AuthenticationService(
     IUserRepository userRepository,
     IPasswordHasher passwordHasher,
     IAuditLogRepository auditLogRepository,
-    IUnitOfWork unitOfWork
+    IRefreshTokenRepository refreshTokenRepository,
+    IJwtService jwtService,
+    IUnitOfWork unitOfWork,
+    IClientRepository clientRepository
     ) : IAuthenticationService
 {
     // Hash pré-computado usado para manter tempo de resposta constante
@@ -54,8 +57,186 @@ public class AuthenticationService(
             return null;
         }
 
+        // Generate JWT tokens
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var idToken = jwtService.GenerateIdToken(user);
+        var refreshToken = jwtService.GenerateRefreshToken();
+
+        // Store refresh token in database
+        var client = await GetOrCreateDefaultClientAsync(cancellationToken);
+        var refreshTokenEntity = new RefreshToken
+        {
+            Token = refreshToken,
+            User = user,
+            Client = client,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsRevoked = false
+        };
+        refreshTokenRepository.Add(refreshTokenEntity);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
         await LogAsync(EventType.LoginSuccess, ipAddress, userAgent, user);
-        return new LoginResponse(user.Guid.ToString(), user.Email.Value, user.Name);
+        return new LoginResponse(
+            user.Guid.ToString(), 
+            user.Email.Value, 
+            user.Name,
+            accessToken,
+            idToken,
+            refreshToken,
+            900); // 15 minutes in seconds
+    }
+
+    public async Task<LoginResponse?> RegisterUserAsync(
+        RegisterRequest request,
+        string? ipAddress = null,
+        string? userAgent = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Validate email format
+        if (!Email.IsValid(request.Email))
+        {
+            await LogAsync(EventType.UserCreationFailed, ipAddress, userAgent);
+            return null;
+        }
+
+        var email = new Email(request.Email);
+
+        // Check if user already exists
+        var existingUser = await userRepository.GetByEmailAsync(email, cancellationToken);
+        if (existingUser != null)
+        {
+            await LogAsync(EventType.UserCreationFailed, ipAddress, userAgent);
+            return null;
+        }
+
+        // Hash password
+        var passwordHash = passwordHasher.HashPassword(request.Password);
+
+        // Create user with required properties
+        var user = new User
+        {
+            Email = email,
+            PasswordHash = passwordHash,
+            Name = request.Name,
+            IsActive = true
+        };
+
+        await userRepository.AddAsyc(user, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Log registration
+        await LogAsync(EventType.UserCreated, ipAddress, userAgent, user);
+
+        // Generate JWT tokens for the new user
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var idToken = jwtService.GenerateIdToken(user);
+        var refreshToken = jwtService.GenerateRefreshToken();
+
+        // Store refresh token in database
+        var client = await GetOrCreateDefaultClientAsync(cancellationToken);
+        var refreshTokenEntity = new RefreshToken
+        {
+            Token = refreshToken,
+            User = user,
+            Client = client,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsRevoked = false
+        };
+        refreshTokenRepository.Add(refreshTokenEntity);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new LoginResponse(
+            user.Guid.ToString(), 
+            user.Email.Value, 
+            user.Name,
+            accessToken,
+            idToken,
+            refreshToken,
+            900); // 15 minutes in seconds
+    }
+
+    public async Task<LoginResponse?> RefreshTokenAsync(
+        string refreshToken,
+        string? ipAddress = null,
+        string? userAgent = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Find the refresh token in the database
+        var tokenEntity = await refreshTokenRepository.GetByTokenAsync(refreshToken, cancellationToken);
+
+        // Validate refresh token
+        if (tokenEntity == null || 
+            tokenEntity.IsRevoked || 
+            tokenEntity.ExpiresAt < DateTime.UtcNow)
+        {
+            await LogAsync(EventType.LoginFailed, ipAddress, userAgent);
+            return null;
+        }
+
+        // Get the user
+        var user = tokenEntity.User;
+        if (user == null || !user.IsActive)
+        {
+            await LogAsync(EventType.LoginFailed, ipAddress, userAgent);
+            return null;
+        }
+
+        // Generate new tokens
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var idToken = jwtService.GenerateIdToken(user);
+        var newRefreshToken = jwtService.GenerateRefreshToken();
+
+        // Revoke old refresh token
+        tokenEntity.IsRevoked = true;
+
+        // Store new refresh token
+        var newRefreshTokenEntity = new RefreshToken
+        {
+            Token = newRefreshToken,
+            User = user,
+            Client = tokenEntity.Client,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsRevoked = false
+        };
+
+        refreshTokenRepository.Add(newRefreshTokenEntity);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await LogAsync(EventType.LoginSuccess, ipAddress, userAgent, user);
+
+        return new LoginResponse(
+            user.Guid.ToString(),
+            user.Email.Value,
+            user.Name,
+            accessToken,
+            idToken,
+            newRefreshToken,
+            900);
+    }
+
+    private async Task<Client> GetOrCreateDefaultClientAsync(CancellationToken cancellationToken = default)
+    {
+        const string defaultClientId = "default-client";
+        
+        var existingClient = await clientRepository.GetByClientIdAsync(defaultClientId, cancellationToken);
+
+        if (existingClient != null)
+        {
+            return existingClient;
+        }
+
+        var newClient = new Client
+        {
+            Name = "Default Client",
+            ClientId = defaultClientId,
+            ClientSecret = "secret",
+            RedirectUris = "http://localhost:3000/callback"
+        };
+
+        await clientRepository.AddAsync(newClient, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return newClient;
     }
 
     private async Task LogAsync(

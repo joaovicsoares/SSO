@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Sso.Application.Authentication;
 using Sso.Application.Persistence;
 using Sso.Domain.Repositories;
 using Sso.Domain.Services;
@@ -24,6 +25,8 @@ namespace Sso.Infrastructure.Extensions
 
                 serviceCollection.AddScoped<IUserRepository, UserRepository>();
 
+                serviceCollection.AddScoped<IClientRepository, ClientRepository>();
+
                 //serviceCollection.AddScoped<IAuthenticationService, AuthenticationService>();
 
                 serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -34,6 +37,16 @@ namespace Sso.Infrastructure.Extensions
 
             // Register password hasher
             serviceCollection.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
+
+            // Register JWT service
+            serviceCollection.AddScoped<IJwtService, JwtService>();
+
+            // Register OAuth repositories
+            serviceCollection.AddScoped<IAuthorizationCodeRepository, AuthorizationCodeRepository>();
+            serviceCollection.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+            // Register OAuth service
+            serviceCollection.AddScoped<IOAuthService, OAuthService>();
 
                 return serviceCollection;
             }
