@@ -14,7 +14,8 @@ public class AuthenticationService(
     IAuditLogRepository auditLogRepository,
     IRefreshTokenRepository refreshTokenRepository,
     IJwtService jwtService,
-    IUnitOfWork unitOfWork
+    IUnitOfWork unitOfWork,
+    IClientRepository clientRepository
     ) : IAuthenticationService
 {
     // Hash pré-computado usado para manter tempo de resposta constante
@@ -215,15 +216,27 @@ public class AuthenticationService(
 
     private async Task<Client> GetOrCreateDefaultClientAsync(CancellationToken cancellationToken = default)
     {
-        // TODO: Replace with actual client lookup when ClientRepository is implemented
-        // For now, return a temporary client instance
-        return new Client
+        const string defaultClientId = "default-client";
+        
+        var existingClient = await clientRepository.GetByClientIdAsync(defaultClientId, cancellationToken);
+
+        if (existingClient != null)
+        {
+            return existingClient;
+        }
+
+        var newClient = new Client
         {
             Name = "Default Client",
-            ClientId = "default-client",
+            ClientId = defaultClientId,
             ClientSecret = "secret",
             RedirectUris = "http://localhost:3000/callback"
         };
+
+        await clientRepository.AddAsync(newClient, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return newClient;
     }
 
     private async Task LogAsync(

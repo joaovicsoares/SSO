@@ -25,6 +25,8 @@ namespace Sso.Infrastructure.Extensions
 
                 serviceCollection.AddScoped<IUserRepository, UserRepository>();
 
+                serviceCollection.AddScoped<IClientRepository, ClientRepository>();
+
                 //serviceCollection.AddScoped<IAuthenticationService, AuthenticationService>();
 
                 serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
